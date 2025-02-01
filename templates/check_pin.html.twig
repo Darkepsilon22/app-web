@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vérification du Code PIN</title>
+    <link rel="stylesheet" href="{{ asset('css/pin.css') }}">
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
+
+
+</head>
+<body>
+    <form action="{{ path('app_login_verify') }}" method="POST">
+        <p>Un code PIN a été envoyé à <strong>{{ email }}</strong>. Veuillez le saisir ci-dessous.</p>
+
+        <!-- Champs cachés pour l'email et le mot de passe -->
+        <input type="text" name="email" value="{{ email }}" class="hidden">
+        <input type="password" name="password" value="{{ password }}" class="hidden">
+
+        <!-- Champ pour le code PIN -->
+        <label for="pin">Code PIN</label>
+        <input type="number" name="pin" id="pin" required placeholder="Saisissez votre code PIN">
+
+        <!-- Bouton de soumission -->
+        <button type="submit">Vérifier le code PIN</button>
+    </form>
+
+    {% if success is defined %}
+        <div class="notification success" id="successNotification">
+            {{ success }}
+        </div>
+    {% endif %}
+
+    <script>
+        // Masquer la notification après 5 secondes
+        setTimeout(() => {
+            const notification = document.getElementById('successNotification');
+            if (notification) {
+                notification.classList.add('hide');
+                setTimeout(() => {
+                    notification.remove();
+                }, 500); // Correspond à la durée de l'animation slideOut
+            }
+        }, 5000); // 5 secondes
+    </script>
+</body>
+</html>

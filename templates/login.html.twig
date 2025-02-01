@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - CRYPTO CURRENCY</title>
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
+
+
+</head>
+<body>
+    <form action="{{ path('app_login_send') }}" method="POST">
+        <h2>Connexion</h2>
+        <label for="email">Email</label>
+        <input type="email" name="email" required placeholder="Entrez votre email">
+        
+        <label for="password">Mot de passe</label>
+        <input type="password" name="password" required placeholder="Entrez votre mot de passe">
+        
+        <button type="submit">Se connecter</button>
+
+        <div class="links">
+            <a href="{{ path('app_register') }}">Créer un compte</a>
+            <a href="{{ path('app_reset_send') }}">Réinitialiser</a>
+        </div>
+    </form>
+
+    {% if error is defined %}
+        <div class="notification" id="errorNotification" role="alert" aria-live="assertive">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <script>
+        // Masquer la notification après 5 secondes
+        setTimeout(() => {
+            const notification = document.getElementById('errorNotification');
+            if (notification) {
+                notification.classList.add('hide');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300); // Correspond à la durée de l'animation slideOut
+            }
+        }, 700); // 5 secondes
+    </script>
+</body>
+</html>

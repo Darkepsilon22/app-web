@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription</title>
+    <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
+
+
+</head>
+<body data-flash="{{ flashMessages|e('html_attr') }}">
+
+    <div id="notification" class="notification"></div>
+
+    <form method="POST" action="{{ path('app_register') }}" id="registerForm">
+        <h2>Formulaire d'Inscription</h2>
+
+        <div class="form-grid">
+            <div>
+                <label for="nom">Nom :</label>
+                <input type="text" id="nom" name="nom" required>
+            </div>
+            <div>
+                <label for="prenom">Prénom :</label>
+                <input type="text" id="prenom" name="prenom" required>
+            </div>
+            <div>
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="dateNaissance">Date de Naissance :</label>
+                <input type="date" id="dateNaissance" name="dateNaissance" required>
+            </div>
+            <div>
+                <label for="password">Mot de Passe :</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+        </div>
+
+        <button type="submit">S'inscrire</button>
+
+        <div class="links">
+            <a href="{{ path('app_login') }}">Déjà inscrit ? Connectez-vous</a>
+        </div>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const notification = document.getElementById('notification');
+
+            function showNotification(message, isError = false) {
+                notification.textContent = message;
+                notification.classList.toggle('error', isError);
+                notification.style.display = 'block';
+
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 5000);
+            }
+
+            // Récupérer les messages flash depuis `data-flash`
+            const flashMessages = JSON.parse(document.body.dataset.flash || '{}');
+            if (flashMessages.success) {
+                flashMessages.success.forEach(msg => showNotification(msg, false));
+            }
+            if (flashMessages.error) {
+                flashMessages.error.forEach(msg => showNotification(msg, true));
+            }
+        });
+    </script>
+    
+</body>
+</html>
