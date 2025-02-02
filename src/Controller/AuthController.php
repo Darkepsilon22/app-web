@@ -20,14 +20,11 @@ class AuthController extends AbstractController
         $this->client = $client;
     }
 
-    // Inscription utilisateur
     #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
     public function register(Request $request, HttpClientInterface $client, RequestStack $requestStack): Response
     {
-        // Récupérer la session via RequestStack
         $session = $requestStack->getSession();
     
-        // Vérifier si la session est bien une instance de Session
         if (!$session instanceof Session) {
             throw new \LogicException('La session est invalide.');
         }
@@ -61,14 +58,12 @@ class AuthController extends AbstractController
     
 
 
-    // Vérification de l'email
     #[Route('/verify', name: 'app_verify', methods: ['GET'])]
     public function verifyEmail(Request $request): Response
     {
         $token = $request->query->get('token');
 
         if ($token) {
-            // Appeler l'API Spring Boot pour valider l'email
             $response = $this->client->request('GET', 'http://localhost:8080/api/auth/verify?token=', [
                 'query' => ['token' => $token]
             ]);
