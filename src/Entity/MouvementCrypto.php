@@ -1,0 +1,37 @@
+<?php
+namespace App\Entity;
+
+use App\Repository\MouvementCryptoRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: MouvementCryptoRepository::class)]
+#[ORM\Table(name: "mouvement_crypto")]
+class MouvementCrypto
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: "id_mouvement_crypto", type: "integer")]
+    private ?int $id_mouvement_crypto = null;
+
+    #[ORM\Column(name: "est_achat", type: "boolean")]
+    private bool $estAchat;
+
+    #[ORM\ManyToOne(targetEntity: Crypto::class)]
+    #[ORM\JoinColumn(name: "id_crypto", referencedColumnName: "id_crypto", nullable: false)]
+    private Crypto $crypto;
+
+    #[ORM\ManyToOne(targetEntity: Users::class)]
+    #[ORM\JoinColumn(name: "id_users", referencedColumnName: "id_users", nullable: false)]
+    private Users $user;
+
+    public function getIdMouvementCrypto(): ?int { return $this->id_mouvement_crypto; }
+
+    public function isEstAchat(): bool { return $this->estAchat; }
+    public function setEstAchat(bool $estAchat): self { $this->estAchat = $estAchat; return $this; }
+
+    public function getCrypto(): Crypto { return $this->crypto; }
+    public function setCrypto(Crypto $crypto): self { $this->crypto = $crypto; return $this; }
+
+    public function getUser(): Users { return $this->user; }
+    public function setUser(Users $user): self { $this->user = $user; return $this; }
+}

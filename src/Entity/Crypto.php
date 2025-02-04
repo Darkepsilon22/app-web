@@ -10,16 +10,22 @@ class Crypto
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
-    private int $id_crypto;
+    #[ORM\Column(type: "integer", name: "id_crypto")]
+    private ?int $id_crypto = null;
 
-    #[ORM\Column(type: "string", length: 50)]
+    #[ORM\Column(type: "string", length: 50, nullable: false)]
     private string $intitule;
 
-    #[ORM\Column(type: "decimal", precision: 19, scale: 5, nullable: true)]
+    #[ORM\Column(type: "decimal", precision: 15, scale: 2, nullable: true)]
     private ?string $currentValeur = null;
 
-    public function getIdCrypto(): int
+    public function __construct(string $intitule, ?string $currentValeur = null)
+    {
+        $this->intitule = $intitule;
+        $this->currentValeur = $currentValeur;
+    }
+
+    public function getIdCrypto(): ?int
     {
         return $this->id_crypto;
     }
