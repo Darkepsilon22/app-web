@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Users;
 use App\Entity\Crypto;
+use App\Entity\CourCrypto; 
 use App\Service\MouvementCryptoService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -57,9 +59,47 @@ class MouvementCryptoController extends AbstractController
             return new JsonResponse(['error' => 'Utilisateur ou crypto non trouvé'], 400);
         }
 
-        // Appeler le service de vente
         $result = $this->mouvementCryptoService->vendreCrypto($user, $crypto, $quantite);
 
         return new JsonResponse($result, isset($result['error']) ? 400 : 200);
     }
+
+    #[Route('/cryptocurrency/{id}', name: 'crypto_price_updates', methods: ['GET'])]
+    public function getPriceUpdates(int $id): Response
+    {
+        $crypto = $this->entityManager->getRepository(Crypto::class)->find($id);
+    
+        if (!$crypto) {
+            throw $this->createNotFoundException('Cryptomonnaie non trouvée');
+        }
+    
+        $historiquePrix = $this->entityManager->getRepository(CourCrypto::class)
+            ->findBy(['crypto' => $crypto], ['instant' => 'ASC']);
+    
+        $prixHistorique = [];
+        $previousTime = null;
+    
+        foreach ($historiquePrix as $prix) {
+            $currentTime = $prix->getInstant();
+            
+            if ($previousTime === null || $currentTime->getTimestamp() - $previousTime->getTimestamp() >= 10) {
+                $prixHistorique[] = [
+                    'date' => $currentTime->format('Y-m-d H:i:s'),
+                    'valeur_dollar' => $prix->getValeurDollar()
+                ];
+                $previousTime = $currentTime;
+            }
+        }
+    
+        return $this->render('graphe/graphe.html.twig', [
+            'crypto' => $crypto,
+            'historique_prix' => $prixHistorique, 
+        ]);
+    }
+    
+
+    
+    
+
+
 }

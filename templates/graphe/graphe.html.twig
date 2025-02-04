@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique des prix de la cryptomonnaie</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Style pour la page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #cryptoChart {
+            width: 100% !important;
+            height: 250px; 
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Détails de la Cryptomonnaie : {{ crypto.intitule }}</h1>
+        <canvas id="cryptoChart"></canvas>
+    </div>
+
+    <script>
+        const historiquePrix = {{ historique_prix | json_encode | raw }};
+
+        const labels = historiquePrix.map(prix => prix.date);
+        const valeurs = historiquePrix.map(prix => parseFloat(prix.valeur_dollar));
+
+        const ctx = document.getElementById('cryptoChart').getContext('2d');
+        const cryptoChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Historique des prix (USD)',
+                    data: valeurs,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Historique des prix de la cryptomonnaie',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        color: '#333'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date',
+                            color: '#333'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45,
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Prix (USD)',
+                            color: '#333'
+                        },
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        function updateChart() {
+            fetch(`/cryptocurrency/${cryptoId}/price-updates`)
+                .then(response => response.json())
+                .then(data => {
+                    const newLabels = data.map(prix => prix.date);
+                    const newValues = data.map(prix => parseFloat(prix.valeur_dollar));
+
+                    cryptoChart.data.labels = newLabels;
+                    cryptoChart.data.datasets[0].data = newValues;
+                    
+                    cryptoChart.update();
+                })
+                .catch(error => console.error('Erreur lors de la récupération des données :', error));
+        }
+
+        setInterval(updateChart, 10000);
+
+        setInterval(() => {
+            location.reload();
+        }, 10000);
+    </script>
+
+</body>
+</html>
