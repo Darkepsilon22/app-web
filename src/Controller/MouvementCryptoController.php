@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\Users;
@@ -42,5 +41,25 @@ class MouvementCryptoController extends AbstractController
 
         return new JsonResponse($result, isset($result['error']) ? 400 : 200);
     }
+
+    #[Route('/vente_crypto', name: 'vente_crypto', methods: ['POST'])]
+    public function vendreCrypto(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $userId = $data['user_id'];
+        $cryptoId = $data['crypto_id'];
+        $quantite = $data['quantite'];
+
+        $user = $this->entityManager->getRepository(Users::class)->find($userId);
+        $crypto = $this->entityManager->getRepository(Crypto::class)->find($cryptoId);
+
+        if (!$user || !$crypto) {
+            return new JsonResponse(['error' => 'Utilisateur ou crypto non trouvé'], 400);
+        }
+
+        // Appeler le service de vente
+        $result = $this->mouvementCryptoService->vendreCrypto($user, $crypto, $quantite);
+
+        return new JsonResponse($result, isset($result['error']) ? 400 : 200);
+    }
 }
-?>
