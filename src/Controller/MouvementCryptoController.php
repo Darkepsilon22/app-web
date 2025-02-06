@@ -75,7 +75,7 @@ class MouvementCryptoController extends AbstractController
     }
     
 
-    #[Route('/cryptocurrency/{id}', name: 'crypto_price_updates', methods: ['GET'])]
+    #[Route('/cryptocurrency/{id}', name: 'crypto_price_graph', methods: ['GET'])]
     public function getPriceUpdates(int $id): Response
     {
         $crypto = $this->entityManager->getRepository(Crypto::class)->find($id);

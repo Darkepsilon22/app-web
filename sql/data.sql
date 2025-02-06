@@ -26,6 +26,20 @@ SET solde = 50000.00
 WHERE Id_users = 1;
 
 
+CREATE OR REPLACE FUNCTION update_current_valeur_func()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE crypto
+    SET current_valeur = NEW.valeur_dollar
+    WHERE Id_crypto = NEW.Id_crypto;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_current_valeur
+AFTER INSERT ON cour_crypto
+FOR EACH ROW
+EXECUTE FUNCTION update_current_valeur_func();
 
 
 -- SELECT * FROM cour_crypto WHERE id_crypto=1;
