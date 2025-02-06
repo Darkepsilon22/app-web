@@ -62,11 +62,20 @@
         }
 
         /* Empty message */
-        td[colspan="5"] {
+        td[colspan="6"] { /* Adjust colspan to 6 */
             text-align: center;
             color: #777;
             font-size: 1rem;
             padding: 20px;
+        }
+
+        /* Styling for quantity */
+        .achat {
+            color: green;
+        }
+
+        .vente {
+            color: red;
         }
 
         /* Responsive table */
@@ -92,6 +101,7 @@
                 <th>Type de Mouvement</th>
                 <th>Crypto</th>
                 <th>Utilisateur</th>
+                <th>Quantité</th>
                 <th>Date du Mouvement</th>
             </tr>
         </thead>
@@ -102,11 +112,15 @@
                     <td>{{ mouvement.typeMouvement }}</td>
                     <td>{{ mouvement.intitule }}</td>
                     <td>{{ mouvement.prenom }} {{ mouvement.nom }}</td>
+                    <td class="{% if mouvement.typeMouvement == 'Achat' %}achat{% else %}vente{% endif %}">
+                        {% if mouvement.typeMouvement == 'Vente' %}-{% endif %}
+                        {{ mouvement.quantite }}
+                    </td>
                     <td>{{ mouvement.dateMouvement|date('d/m/Y H:i') }}</td>
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="5">Aucun mouvement trouvé.</td>
+                    <td colspan="6">Aucun mouvement trouvé.</td>
                 </tr>
             {% endfor %}
         </tbody>
