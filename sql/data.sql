@@ -22,7 +22,7 @@ VALUES
 (5000.00, CURRENT_TIMESTAMP, TRUE, 1); 
 
 UPDATE users
-SET solde = 50000.00
+SET solde = 55000.00
 WHERE Id_users = 1;
 
 INSERT INTO users_admin (username, password)

@@ -80,12 +80,13 @@ CREATE TABLE commission(
    FOREIGN KEY(Id_mouvement_crypto) REFERENCES mouvement_crypto(Id_mouvement_crypto)
 );
 
-CREATE TABLE historique_commission(
+CREATE TABLE historique_pourcentage_commission(
    Id_historique_commission SERIAL,
-   date_historique TIMESTAMP NOT NULL,
-   valeur_historique NUMERIC(15,2)   NOT NULL,
+   date_historique_porucentage TIMESTAMP NOT NULL,
+   valeur_historique_pourcentage NUMERIC(15,2)   NOT NULL,
    PRIMARY KEY(Id_historique_commission)
 );
+
 
 CREATE TABLE crypto_utilisateur(
    Id_crypto_utilisateur SERIAL,
