@@ -46,3 +46,10 @@ EXECUTE FUNCTION update_current_valeur_func();
 
 
 -- SELECT * FROM cour_crypto WHERE id_crypto=1;
+
+INSERT INTO crypto_utilisateur (quantite, id_users, id_crypto)
+VALUES 
+    (0.5, 1, 1),  -- 0.5 Bitcoin pour l'utilisateur 1
+    (1.0, 1, 2),  -- 1 Ethereum pour l'utilisateur 1
+    (10.0, 1, 3), -- 10 Binance Coin pour l'utilisateur 1
+    (100.0, 1, 4); -- 100 Ripple pour l'utilisateur 1

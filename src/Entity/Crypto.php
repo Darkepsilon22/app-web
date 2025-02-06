@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\CryptoUtilisateurRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -50,5 +51,23 @@ class Crypto
     {
         $this->currentValeur = $currentValeur;
         return $this;
+    }
+
+    public function getQuantiteCryptoUser(?int $id_users, CryptoUtilisateurRepository $cryptoUtilisateurRepository): ?float
+    {
+        if ($id_users === null || $this->id_crypto === null) {
+            return null;
+        }
+    
+        // Récupérer la quantité de crypto détenue par l'utilisateur
+        $quantite = $cryptoUtilisateurRepository->findByUserAndCrypto($id_users, $this->id_crypto);
+    
+        if ($quantite === null || $this->currentValeur === null) {
+            return 0;
+        }
+    
+        return $quantite;
+        // Calculer la valeur totale en multipliant la quantité par la valeur actuelle de la crypto
+        // return $quantite * (float) $this->currentValeur;
     }
 }
