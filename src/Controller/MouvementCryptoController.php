@@ -38,19 +38,20 @@ class MouvementCryptoController extends AbstractController
         $cryptoId = $data['crypto_id'];
         $quantite = $data['quantite'];
         $dateMouvement = $data['date_mouvement'];
-
+    
         $user = $this->entityManager->getRepository(Users::class)->find($userId);
         $crypto = $this->entityManager->getRepository(Crypto::class)->find($cryptoId);
-
+    
         if (!$user || !$crypto) {
             return new JsonResponse(['error' => 'Utilisateur ou crypto non trouvé'], 400);
         }
-
+    
+        // Pass the date_mouvement to the service method
         $result = $this->mouvementCryptoService->acheterCrypto($user, $crypto, $quantite, $dateMouvement);
-
+    
         return new JsonResponse($result, isset($result['error']) ? 400 : 200);
     }
-
+    
     #[Route('/vente_crypto', name: 'vente_crypto', methods: ['POST'])]
     public function vendreCrypto(Request $request): JsonResponse
     {
@@ -59,19 +60,20 @@ class MouvementCryptoController extends AbstractController
         $cryptoId = $data['crypto_id'];
         $quantite = $data['quantite'];
         $dateMouvement = $data['date_mouvement'];
-
-
+    
         $user = $this->entityManager->getRepository(Users::class)->find($userId);
         $crypto = $this->entityManager->getRepository(Crypto::class)->find($cryptoId);
-
+    
         if (!$user || !$crypto) {
             return new JsonResponse(['error' => 'Utilisateur ou crypto non trouvé'], 400);
         }
-
+    
+        // Pass the date_mouvement to the service method
         $result = $this->mouvementCryptoService->vendreCrypto($user, $crypto, $quantite, $dateMouvement);
-
+    
         return new JsonResponse($result, isset($result['error']) ? 400 : 200);
     }
+    
 
     #[Route('/cryptocurrency/{id}', name: 'crypto_price_updates', methods: ['GET'])]
     public function getPriceUpdates(int $id): Response

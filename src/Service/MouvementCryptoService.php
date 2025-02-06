@@ -34,7 +34,7 @@ class MouvementCryptoService
         $mouvementCrypto->setCrypto($crypto);
         $mouvementCrypto->setUser($user);
         $mouvementCrypto->setDateMouvement(\DateTime::createFromImmutable(new \DateTimeImmutable()));
-
+        $mouvementCrypto->setQuantite($quantite);  
 
         $mouvementSolde = new MouvementSolde();
         $mouvementSolde->setSomme(-$prixTotal);
@@ -58,7 +58,8 @@ class MouvementCryptoService
         $this->entityManager->persist($user);
         $this->entityManager->persist($mouvementCrypto);
         $this->entityManager->persist($mouvementSolde);
-        
+
+        // Sauvegarder les changements
         $this->entityManager->flush();
 
         return ['success' => 'Achat effectué avec succès'];
@@ -81,33 +82,35 @@ class MouvementCryptoService
         // Mettre à jour le solde de l'utilisateur
         $user->setSolde($user->getSolde() + $prixTotal);
 
-        // Créer un mouvement de crypto pour la vente
+        // Enregistrer le mouvement crypto
         $mouvementCrypto = new MouvementCrypto();
-        $mouvementCrypto->setEstAchat(false);  // Indiquer que c'est une vente
+        $mouvementCrypto->setEstAchat(false);  
         $mouvementCrypto->setCrypto($crypto);
         $mouvementCrypto->setUser($user);
         $mouvementCrypto->setDateMouvement(\DateTime::createFromImmutable(new \DateTimeImmutable()));
+        $mouvementCrypto->setQuantite($quantite);  
 
-
-        // Créer un mouvement de solde pour la vente
+        // Enregistrer le mouvement de solde
         $mouvementSolde = new MouvementSolde();
         $mouvementSolde->setSomme($prixTotal);
         $mouvementSolde->setDateMouvement(new \DateTimeImmutable());
-        $mouvementSolde->setEstDepot(true);  // Indiquer qu'il s'agit d'un dépôt
+        $mouvementSolde->setEstDepot(true);  
         $mouvementSolde->setUser($user);
 
         // Réduire la quantité de cryptomonnaie de l'utilisateur
         $cryptoUtilisateur->setQuantite($cryptoUtilisateur->getQuantite() - $quantite);
 
         // Si la quantité devient 0, on peut supprimer l'entité CryptoUtilisateur
-        if ($cryptoUtilisateur->getQuantite() <= 0) {
-            $this->entityManager->remove($cryptoUtilisateur);
-        }
+        // if ($cryptoUtilisateur->getQuantite() <= 0) {
+        //     $this->entityManager->remove($cryptoUtilisateur);
+        // }
 
+        // Persister les entités
         $this->entityManager->persist($user);
         $this->entityManager->persist($mouvementCrypto);
         $this->entityManager->persist($mouvementSolde);
-        
+
+        // Sauvegarder les changements
         $this->entityManager->flush();
 
         return ['success' => 'Vente effectuée avec succès'];

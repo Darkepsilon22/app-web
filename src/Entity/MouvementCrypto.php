@@ -24,8 +24,11 @@ class MouvementCrypto
     #[ORM\JoinColumn(name: "id_users", referencedColumnName: "id_users", nullable: false)]
     private Users $user;
 
-     #[ORM\Column(name: "date_mouvement", type: "datetime")]
-     private \DateTime $dateMouvement;
+    #[ORM\Column(name: "date_mouvement", type: "datetime")]
+    private \DateTime $dateMouvement;
+
+    #[ORM\Column(name: "quantite", type: "decimal", precision: 15, scale: 8)]
+    private float $quantite;
 
     public function getIdMouvementCrypto(): ?int { return $this->id_mouvement_crypto; }
 
@@ -40,4 +43,7 @@ class MouvementCrypto
 
     public function getDateMouvement(): \DateTime { return $this->dateMouvement; }
     public function setDateMouvement(\DateTime $dateMouvement): self { $this->dateMouvement = $dateMouvement; return $this; }
+
+    public function getQuantite(): float { return $this->quantite; }
+    public function setQuantite(float $quantite): self { $this->quantite = $quantite; return $this; }
 }
