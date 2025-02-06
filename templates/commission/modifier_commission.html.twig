@@ -1,20 +1,24 @@
+{# templates/commission/modifier_commission.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier Commission{% endblock %}
+{% block title %}Modifier la commission{% endblock %}
 
 {% block body %}
-    <h1>Modifier le pourcentage de commission</h1>
+    <h1>Modifier la commission</h1>
 
-    {# Afficher le message flash s'il y en a un #}
-    {% for message in app.session.flashbag.get('success') %}
-        <div class="alert alert-success">
-            {{ message }}
-        </div>
+    {# Affichage du message de succès #}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
     {% endfor %}
 
-    {{ form_start(form) }}
-        {{ form_row(form.valeur_historique_pourcentage) }}
-        {{ form_row(form.date_historique_porucentage) }}
-        <button type="submit" class="btn btn-primary">Modifier</button>
-    {{ form_end(form) }}
+    {# Formulaire pour modifier la commission #}
+    <form method="POST">
+        <div class="form-group">
+            <label for="valeur_historique_pourcentage">Nouveau pourcentage de commission</label>
+            <input type="number" id="valeur_historique_pourcentage" name="valeur_historique_pourcentage" 
+                   class="form-control" value="{{ historiqueCommission.valeurHistoriquePourcentage }}" step="0.01" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Sauvegarder</button>
+    </form>
 {% endblock %}
