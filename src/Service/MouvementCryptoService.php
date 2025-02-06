@@ -20,68 +20,85 @@ class MouvementCryptoService
         $this->entityManager = $entityManager;
     }
 
-    public function acheterCrypto(Users $user, Crypto $crypto, float $quantite, string $dateMouvement, float $commissionPourcentage): array
-{
-    $prixTotal = $crypto->getCurrentValeur() * (1 + ($commissionPourcentage / 100)) * $quantite;
-
-    if ($user->getSolde() < $prixTotal) {
-        return ['error' => 'Fonds insuffisants'];
-    }
-
-    // Déduire le prix total du solde de l'utilisateur
-    $user->setSolde($user->getSolde() - $prixTotal);
-
-    // Vérifier si l'utilisateur possède déjà cette crypto
-    $cryptoUtilisateur = $this->entityManager->getRepository(CryptoUtilisateur::class)
-        ->findOneBy(['user' => $user, 'crypto' => $crypto]);
-
-    if ($cryptoUtilisateur) {
-        // L'utilisateur possède déjà cette crypto, mise à jour de la quantité
-        $cryptoUtilisateur->setQuantite($cryptoUtilisateur->getQuantite() + $quantite);
-    } else {
-        // L'utilisateur n'a pas encore cette crypto, créer une nouvelle entrée
-        $cryptoUtilisateur = new CryptoUtilisateur();
-        $cryptoUtilisateur->setUser($user);
-        $cryptoUtilisateur->setCrypto($crypto);
-        $cryptoUtilisateur->setQuantite($quantite);
-
+    public function acheterCrypto(Users $user, Crypto $crypto, float $quantite, string $dateMouvement): array
+    {
+        $dernierHistoriqueCommission = $this->entityManager->getRepository(HistoriqueCommission::class)
+            ->findOneBy([], ['dateHistoriquePourcentage' => 'DESC']);
+    
+        if (!$dernierHistoriqueCommission) {
+            return ['error' => 'Aucune commission définie'];
+        }
+    
+        $commissionPourcentage = $dernierHistoriqueCommission->getValeurHistoriquePourcentage();
+    
+        // Calcul du prix total du crypto sans la commission
+        $prixCrypto = $crypto->getCurrentValeur() * $quantite;
+    
+        // Calcul de la commission basée sur la valeur du crypto (pas sur le prix total)
+        $commissionValeur = ($crypto->getCurrentValeur() * $commissionPourcentage / 100) * $quantite;
+    
+        // Calcul du prix total que l'utilisateur devra payer (prix crypto + commission)
+        $prixTotal = $prixCrypto + $commissionValeur;
+    
+        if ($user->getSolde() < $prixTotal) {
+            return ['error' => 'Fonds insuffisants'];
+        }
+    
+        $user->setSolde($user->getSolde() - $prixTotal);
+    
+        $cryptoUtilisateur = $this->entityManager->getRepository(CryptoUtilisateur::class)
+            ->findOneBy(['user' => $user, 'crypto' => $crypto]);
+    
+        if ($cryptoUtilisateur) {
+            $cryptoUtilisateur->setQuantite($cryptoUtilisateur->getQuantite() + $quantite);
+        } else {
+            $cryptoUtilisateur = new CryptoUtilisateur();
+            $cryptoUtilisateur->setUser($user);
+            $cryptoUtilisateur->setCrypto($crypto);
+            $cryptoUtilisateur->setQuantite($quantite);
+    
+            $this->entityManager->persist($cryptoUtilisateur);
+        }
+    
+        // Enregistrement du mouvement d'achat
+        $mouvementCrypto = new MouvementCrypto();
+        $mouvementCrypto->setEstAchat(true);
+        $mouvementCrypto->setCrypto($crypto);
+        $mouvementCrypto->setUser($user);
+        $mouvementCrypto->setDateMouvement(new \DateTime($dateMouvement));
+        $mouvementCrypto->setQuantite($quantite);
+    
+        // Enregistrer la commission
+        $commission = new Commission();
+        $commission->setPourcentage($commissionPourcentage);
+        $commission->setValeur($commissionValeur); // Commission calculée sur la valeur brute
+        $commission->setMouvementCrypto($mouvementCrypto);
+    
+        // Persistance des données
+        $this->entityManager->persist($user);
+        $this->entityManager->persist($mouvementCrypto);
+        $this->entityManager->persist($commission);
         $this->entityManager->persist($cryptoUtilisateur);
+    
+        $this->entityManager->flush();
+    
+        return ['success' => 'Achat effectué avec succès'];
+    }
+    
+
+public function vendreCrypto(Users $user, Crypto $crypto, float $quantite, string $dateMouvement): array
+{
+    // Récupérer la commission la plus récente
+    $dernierHistoriqueCommission = $this->entityManager->getRepository(HistoriqueCommission::class)
+        ->findOneBy([], ['dateHistoriquePourcentage' => 'DESC']);
+
+    if (!$dernierHistoriqueCommission) {
+        return ['error' => 'Aucune commission définie'];
     }
 
-    // Enregistrer le mouvement d'achat
-    $mouvementCrypto = new MouvementCrypto();
-    $mouvementCrypto->setEstAchat(true);
-    $mouvementCrypto->setCrypto($crypto);
-    $mouvementCrypto->setUser($user);
-    $mouvementCrypto->setDateMouvement(new \DateTime($dateMouvement));
-    $mouvementCrypto->setQuantite($quantite);
+    $commissionPourcentage = $dernierHistoriqueCommission->getValeurHistoriquePourcentage();
 
-    // Calculer et enregistrer la commission
-    $commissionValeur = ($prixTotal * $commissionPourcentage) / 100;
-    $commission = new Commission();
-    $commission->setPourcentage($commissionPourcentage);
-    $commission->setValeur($commissionValeur);
-    $commission->setMouvementCrypto($mouvementCrypto);
-
-    // Historique de la commission
-    $historiqueCommission = new HistoriqueCommission();
-    $historiqueCommission->setDateHistorique(new \DateTimeImmutable());
-    $historiqueCommission->setValeurHistorique($commissionValeur);
-
-    // Persistance des données
-    $this->entityManager->persist($user);
-    $this->entityManager->persist($mouvementCrypto);
-    $this->entityManager->persist($commission);
-    $this->entityManager->persist($historiqueCommission);
-    $this->entityManager->persist($cryptoUtilisateur);
-
-    $this->entityManager->flush();
-
-    return ['success' => 'Achat effectué avec succès'];
-}
-
-public function vendreCrypto(Users $user, Crypto $crypto, float $quantite, string $dateMouvement, float $commissionPourcentage): array
-{
+    // Calcul du prix total sans commission (la commission ne s’applique qu’après la vente)
     $prixTotal = $crypto->getCurrentValeur() * $quantite;
 
     // Récupérer la quantité de crypto détenue par l'utilisateur
@@ -92,7 +109,7 @@ public function vendreCrypto(Users $user, Crypto $crypto, float $quantite, strin
         return ['error' => 'Quantité de crypto insuffisante'];
     }
 
-    // Mise à jour du solde utilisateur
+    // Mise à jour du solde utilisateur après vente
     $user->setSolde($user->getSolde() + $prixTotal);
 
     // Mise à jour de la quantité de crypto détenue
@@ -114,22 +131,17 @@ public function vendreCrypto(Users $user, Crypto $crypto, float $quantite, strin
     $commission->setValeur($commissionValeur);
     $commission->setMouvementCrypto($mouvementCrypto);
 
-    // Historique de la commission
-    $historiqueCommission = new HistoriqueCommission();
-    $historiqueCommission->setDateHistorique(new \DateTimeImmutable());
-    $historiqueCommission->setValeurHistorique($commissionValeur);
-
     // Persistance des données
     $this->entityManager->persist($user);
     $this->entityManager->persist($cryptoUtilisateur);
     $this->entityManager->persist($mouvementCrypto);
     $this->entityManager->persist($commission);
-    $this->entityManager->persist($historiqueCommission);
 
     $this->entityManager->flush();
 
     return ['success' => 'Vente effectuée avec succès'];
 }
+
 
 
 }

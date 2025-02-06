@@ -19,7 +19,7 @@ VALUES
 
 INSERT INTO mouvement_solde (somme, date_mouvement, est_depot, Id_users)
 VALUES
-(5000.00, CURRENT_TIMESTAMP, TRUE, 1); 
+(50000.00, CURRENT_TIMESTAMP, TRUE, 1); 
 
 UPDATE users
 SET solde = 55000.00
@@ -44,5 +44,7 @@ AFTER INSERT ON cour_crypto
 FOR EACH ROW
 EXECUTE FUNCTION update_current_valeur_func();
 
+INSERT INTO historique_pourcentage_commission (date_historique_porucentage, valeur_historique_pourcentage) 
+VALUES (NOW(), 10.00);
 
 -- SELECT * FROM cour_crypto WHERE id_crypto=1;

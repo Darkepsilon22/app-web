@@ -6,43 +6,43 @@ use Doctrine\ORM\Mapping as ORM;
 
 // Entité HistoriqueCommission
 #[ORM\Entity]
-#[ORM\Table(name: "historique_commission")]
+#[ORM\Table(name: "historique_pourcentage_commission")]
 class HistoriqueCommission
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
-    private int $id_historique_commission;
+    #[ORM\Column(name: "id_historique_commission", type: "integer")]
+    private int $idHistoriqueCommission;
 
-    #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $date_historique;
+    #[ORM\Column(name: "date_historique_porucentage", type: "datetime")]
+    private \DateTimeInterface $dateHistoriquePourcentage;
 
-    #[ORM\Column(type: "decimal", precision: 15, scale: 2)]
-    private float $valeur_historique;
+    #[ORM\Column(name: "valeur_historique_pourcentage", type: "decimal", precision: 15, scale: 2)]
+    private float $valeurHistoriquePourcentage;
 
     // Getters et Setters
     public function getIdHistoriqueCommission(): int
     {
-        return $this->id_historique_commission;
+        return $this->idHistoriqueCommission;
     }
 
-    public function getDateHistorique(): \DateTimeInterface
+    public function getDateHistoriquePourcentage(): \DateTimeInterface
     {
-        return $this->date_historique;
+        return $this->dateHistoriquePourcentage;
     }
 
-    public function setDateHistorique(\DateTimeInterface $date_historique): void
+    public function setDateHistoriquePourcentage(\DateTimeInterface $dateHistoriquePourcentage): void
     {
-        $this->date_historique = $date_historique;
+        $this->dateHistoriquePourcentage = $dateHistoriquePourcentage;
     }
 
-    public function getValeurHistorique(): float
+    public function getValeurHistoriquePourcentage(): float
     {
-        return $this->valeur_historique;
+        return $this->valeurHistoriquePourcentage;
     }
 
-    public function setValeurHistorique(float $valeur_historique): void
+    public function setValeurHistoriquePourcentage(float $valeurHistoriquePourcentage): void
     {
-        $this->valeur_historique = $valeur_historique;
+        $this->valeurHistoriquePourcentage = $valeurHistoriquePourcentage;
     }
 }
