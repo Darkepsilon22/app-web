@@ -46,3 +46,4 @@ class HistoriqueCommission
         $this->valeurHistoriquePourcentage = $valeurHistoriquePourcentage;
     }
 }
+

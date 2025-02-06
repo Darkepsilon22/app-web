@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Commission{% endblock %}
+
+{% block body %}
+    <h1>Modifier le pourcentage de commission</h1>
+
+    {# Afficher le message flash s'il y en a un #}
+    {% for message in app.session.flashbag.get('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {{ form_start(form) }}
+        {{ form_row(form.valeur_historique_pourcentage) }}
+        {{ form_row(form.date_historique_porucentage) }}
+        <button type="submit" class="btn btn-primary">Modifier</button>
+    {{ form_end(form) }}
+{% endblock %}
