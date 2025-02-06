@@ -25,6 +25,9 @@ UPDATE users
 SET solde = 50000.00
 WHERE Id_users = 1;
 
+INSERT INTO users_admin (username, password)
+VALUES ('admin', 'test');
+
 
 CREATE OR REPLACE FUNCTION update_current_valeur_func()
 RETURNS TRIGGER AS $$
