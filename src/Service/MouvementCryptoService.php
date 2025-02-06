@@ -33,6 +33,8 @@ class MouvementCryptoService
         $mouvementCrypto->setEstAchat(true);
         $mouvementCrypto->setCrypto($crypto);
         $mouvementCrypto->setUser($user);
+        $mouvementCrypto->setDateMouvement(\DateTime::createFromImmutable(new \DateTimeImmutable()));
+
 
         $mouvementSolde = new MouvementSolde();
         $mouvementSolde->setSomme(-$prixTotal);
@@ -84,6 +86,8 @@ class MouvementCryptoService
         $mouvementCrypto->setEstAchat(false);  // Indiquer que c'est une vente
         $mouvementCrypto->setCrypto($crypto);
         $mouvementCrypto->setUser($user);
+        $mouvementCrypto->setDateMouvement(\DateTime::createFromImmutable(new \DateTimeImmutable()));
+
 
         // Créer un mouvement de solde pour la vente
         $mouvementSolde = new MouvementSolde();

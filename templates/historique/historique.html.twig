@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique des Mouvements</title>
+
+    <style>
+        /* Global styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header style */
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* Table container */
+        table {
+            width: 80%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Table header */
+        thead {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-size: 1.1rem;
+        }
+
+        /* Table body */
+        tbody tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+        td {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        /* Hover effect on table rows */
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Empty message */
+        td[colspan="5"] {
+            text-align: center;
+            color: #777;
+            font-size: 1rem;
+            padding: 20px;
+        }
+
+        /* Responsive table */
+        @media screen and (max-width: 768px) {
+            table {
+                width: 95%;
+            }
+
+            th, td {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Historique des Mouvements</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID Mouvement</th>
+                <th>Type de Mouvement</th>
+                <th>Crypto</th>
+                <th>Utilisateur</th>
+                <th>Date du Mouvement</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mouvement in historique %}
+                <tr>
+                    <td>{{ mouvement.idMouvementCrypto }}</td>
+                    <td>{{ mouvement.typeMouvement }}</td>
+                    <td>{{ mouvement.intitule }}</td>
+                    <td>{{ mouvement.prenom }} {{ mouvement.nom }}</td>
+                    <td>{{ mouvement.dateMouvement|date('d/m/Y H:i') }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun mouvement trouvé.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -24,6 +24,9 @@ class MouvementCrypto
     #[ORM\JoinColumn(name: "id_users", referencedColumnName: "id_users", nullable: false)]
     private Users $user;
 
+     #[ORM\Column(name: "date_mouvement", type: "datetime")]
+     private \DateTime $dateMouvement;
+
     public function getIdMouvementCrypto(): ?int { return $this->id_mouvement_crypto; }
 
     public function isEstAchat(): bool { return $this->estAchat; }
@@ -34,4 +37,7 @@ class MouvementCrypto
 
     public function getUser(): Users { return $this->user; }
     public function setUser(Users $user): self { $this->user = $user; return $this; }
+
+    public function getDateMouvement(): \DateTime { return $this->dateMouvement; }
+    public function setDateMouvement(\DateTime $dateMouvement): self { $this->dateMouvement = $dateMouvement; return $this; }
 }

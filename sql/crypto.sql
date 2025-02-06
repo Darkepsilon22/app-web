@@ -41,15 +41,17 @@ CREATE TABLE cour_crypto(
    FOREIGN KEY(Id_crypto) REFERENCES crypto(Id_crypto)
 );
 
-CREATE TABLE mouvement_crypto(
+CREATE TABLE mouvement_crypto (
    Id_mouvement_crypto SERIAL,
    est_achat BOOLEAN NOT NULL,
    Id_crypto INTEGER NOT NULL,
    Id_users INTEGER NOT NULL,
+   date_mouvement TIMESTAMP NOT NULL,
    PRIMARY KEY(Id_mouvement_crypto),
    FOREIGN KEY(Id_crypto) REFERENCES crypto(Id_crypto),
    FOREIGN KEY(Id_users) REFERENCES users(Id_users)
 );
+
 
 CREATE TABLE crypto_utilisateur (
    Id_crypto_utilisateur SERIAL,

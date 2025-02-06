@@ -4,9 +4,10 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity]
 #[ORM\Table(name: "users")]
-class Users
+class Users 
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
