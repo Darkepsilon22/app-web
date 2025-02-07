@@ -1,5 +1,4 @@
 <?php
-
 // UserController.php
 
 namespace App\Controller;
@@ -8,7 +7,7 @@ use App\Entity\Users;
 use App\Entity\MouvementSolde;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;  // Correct import
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,6 +27,10 @@ class UserController extends AbstractController
             throw new \Exception("L'utilisateur connecté n'est pas valide.");
         }
 
+        // Récupérer tous les mouvements de solde pour l'utilisateur
+        $mouvementsSolde = $entityManager->getRepository(MouvementSolde::class)
+            ->findBy(['user' => $userFromDb], ['dateMouvement' => 'DESC']);  // Tri par date décroissante
+
         if ($request->isMethod('POST')) {
             $somme = $request->request->get('somme');
             $operation = $request->request->get('operation');
@@ -38,16 +41,16 @@ class UserController extends AbstractController
             }
 
             $mouvementSolde = new MouvementSolde();
-            $mouvementSolde->setSomme((string)$somme); 
+            $mouvementSolde->setSomme((string)$somme);
             $mouvementSolde->setEstDepot($operation == 'depot');
-            $mouvementSolde->setUser($userFromDb);  
+            $mouvementSolde->setUser($userFromDb);
             $mouvementSolde->setDateMouvement(new \DateTimeImmutable());
-            $mouvementSolde->setStatut('en_attente'); 
+            $mouvementSolde->setStatut('en_attente');
 
             $entityManager->persist($mouvementSolde);
             $entityManager->flush();
 
-            // Renvoi de la réponse JSON
+            // Renvoi de la réponse JSON pour actualiser la page ou faire une action côté client
             return new JsonResponse([
                 'status' => 'success',
                 'message' => 'Votre demande de dépôt/retrait a été enregistrée et est en attente de validation.',
@@ -62,7 +65,8 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/depot_retrait.html.twig', [
-            'user' => $userFromDb,  
+            'user' => $userFromDb,
+            'mouvementsSolde' => $mouvementsSolde,  // Passer les mouvements à la vue
         ]);
     }
 }
