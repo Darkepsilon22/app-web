@@ -30,6 +30,10 @@ class MouvementCrypto
     #[ORM\Column(name: "quantite", type: "decimal", precision: 15, scale: 8)]
     private float $quantite;
 
+    #[ORM\Column(name: "valeur_crypto", type: "decimal", precision: 15, scale: 2)]
+    private float $valeurCrypto;
+
+    
     public function getIdMouvementCrypto(): ?int { return $this->id_mouvement_crypto; }
 
     public function isEstAchat(): bool { return $this->estAchat; }
@@ -46,4 +50,24 @@ class MouvementCrypto
 
     public function getQuantite(): float { return $this->quantite; }
     public function setQuantite(float $quantite): self { $this->quantite = $quantite; return $this; }
+
+    /**
+     * Get the value of valeurCrypto
+     */ 
+    public function getValeurCrypto()
+    {
+        return $this->valeurCrypto;
+    }
+
+    /**
+     * Set the value of valeurCrypto
+     *
+     * @return  self
+     */ 
+    public function setValeurCrypto($valeurCrypto)
+    {
+        $this->valeurCrypto = $valeurCrypto;
+
+        return $this;
+    }
 }

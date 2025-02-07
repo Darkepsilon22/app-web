@@ -55,6 +55,7 @@ CREATE TABLE mouvement_crypto(
    est_achat BOOLEAN NOT NULL,
    date_mouvement TIMESTAMP NOT NULL,
    quantite NUMERIC(15,8)   NOT NULL,
+   valeur_crypto NUMERIC(15,2)   NOT NULL,
    Id_crypto INTEGER NOT NULL,
    Id_users INTEGER NOT NULL,
    PRIMARY KEY(Id_mouvement_crypto),
