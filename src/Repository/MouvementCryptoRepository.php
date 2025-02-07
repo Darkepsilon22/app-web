@@ -25,7 +25,8 @@ class MouvementCryptoRepository extends ServiceEntityRepository
             'u.prenom', 
             'u.nom',    
             'm.dateMouvement' ,
-            'm.quantite' 
+            'm.quantite',
+            'm.valeurCrypto'
         )
         ->join('m.crypto', 'c') 
         ->join('m.user', 'u')   
@@ -38,12 +39,26 @@ class MouvementCryptoRepository extends ServiceEntityRepository
         ->getResult(); 
 }
 
+public function getTotalAchatByUser(int $userId): float
+{
+    return (float) $this->createQueryBuilder('m')
+        ->select('SUM(m.quantite * m.valeurCrypto) AS totalAchat')
+        ->where('m.user = :userId')
+        ->andWhere('m.estAchat = true')
+        ->setParameter('userId', $userId)
+        ->getQuery()
+        ->getSingleScalarResult();
+}
 
-    
-
-    
-
-
-    
+public function getTotalVenteByUser(int $userId): float
+{
+    return (float) $this->createQueryBuilder('m')
+        ->select('SUM(m.quantite * m.valeurCrypto) AS totalVente')
+        ->where('m.user = :userId')
+        ->andWhere('m.estAchat = false')
+        ->setParameter('userId', $userId)
+        ->getQuery()
+        ->getSingleScalarResult();
+}
 
 }

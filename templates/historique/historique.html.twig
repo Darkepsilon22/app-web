@@ -102,6 +102,7 @@
                 <th>Crypto</th>
                 <th>Utilisateur</th>
                 <th>Quantité</th>
+                <th>Cours</th>
                 <th>Date du Mouvement</th>
             </tr>
         </thead>
@@ -116,6 +117,7 @@
                         {% if mouvement.typeMouvement == 'Vente' %}-{% endif %}
                         {{ mouvement.quantite }}
                     </td>
+                    <td>{{ mouvement.valeurCrypto }}</td>
                     <td>{{ mouvement.dateMouvement|date('d/m/Y H:i') }}</td>
                 </tr>
             {% else %}

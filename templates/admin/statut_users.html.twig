@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Statut des Utilisateurs</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Solde</th>
+                <th>Total Achats</th>
+                <th>Total Ventes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in usersData %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.prenom }}</td>
+                    <td>{{ user.nom }}</td>
+                    <td>{{ user.solde }}</td>
+                    <td>{{ user.totalAchat }}</td>
+                    <td>{{ user.totalVente }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
