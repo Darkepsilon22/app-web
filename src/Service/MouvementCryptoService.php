@@ -75,6 +75,7 @@ class MouvementCryptoService
     $mouvementCrypto->setUser($user);
     $mouvementCrypto->setDateMouvement(new \DateTime($dateMouvement));
     $mouvementCrypto->setQuantite($quantite);
+    $mouvementCrypto->setValeurCrypto($crypto->getCurrentValeur());
 
     // Enregistrement de la commission
     $commission = new Commission();
@@ -138,6 +139,7 @@ public function vendreCrypto(Users $user, Crypto $crypto, float $quantite, strin
     $mouvementCrypto->setUser($user);
     $mouvementCrypto->setDateMouvement(new \DateTime($dateMouvement));
     $mouvementCrypto->setQuantite($quantite);
+    $mouvementCrypto->setValeurCrypto($crypto->getCurrentValeur());
 
     // Calcul et enregistrement de la commission
     $commissionValeur = ($prixTotal * $commissionPourcentage) / 100;
