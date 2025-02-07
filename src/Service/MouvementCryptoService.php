@@ -47,12 +47,12 @@ class MouvementCryptoService
     // Mise à jour du solde de l'utilisateur
     $user->setSolde($user->getSolde() - $prixTotal);
 
-    // Enregistrement du mouvement de solde (retrait)
-    $mouvementSolde = new MouvementSolde();
-    $mouvementSolde->setSomme($prixTotal);
-    $mouvementSolde->setDateMouvement(new \DateTimeImmutable($dateMouvement));
-    $mouvementSolde->setEstDepot(false); // Retrait
-    $mouvementSolde->setUser($user);
+    // // Enregistrement du mouvement de solde (retrait)
+    // $mouvementSolde = new MouvementSolde();
+    // $mouvementSolde->setSomme($prixTotal);
+    // $mouvementSolde->setDateMouvement(new \DateTimeImmutable($dateMouvement));
+    // $mouvementSolde->setEstDepot(false); // Retrait
+    // $mouvementSolde->setUser($user);
 
     // Mise à jour de la quantité de crypto de l'utilisateur
     $cryptoUtilisateur = $this->entityManager->getRepository(CryptoUtilisateur::class)
@@ -84,7 +84,7 @@ class MouvementCryptoService
 
     // Persistance des données
     $this->entityManager->persist($user);
-    $this->entityManager->persist($mouvementSolde);
+    // $this->entityManager->persist($mouvementSolde);
     $this->entityManager->persist($mouvementCrypto);
     $this->entityManager->persist($commission);
     $this->entityManager->persist($cryptoUtilisateur);

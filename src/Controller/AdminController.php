@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\UsersAdmin;
+use App\Entity\MouvementSolde;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -55,6 +56,60 @@ class AdminController extends AbstractController
         $session = $requestStack->getSession();
         $session->invalidate(); // Détruit la session
         return $this->redirectToRoute('admin_login');
+    }
+
+    #[Route('/admin/gestion_mouvements', name: 'admin_gestion_mouvements')]
+    public function gestionMouvements(EntityManagerInterface $entityManager): Response
+    {
+        // Récupérer tous les mouvements en attente
+        $mouvements = $entityManager->getRepository(MouvementSolde::class)->findBy(['statut' => 'en_attente']);
+
+        return $this->render('admin/gestion_mouvements.html.twig', [
+            'mouvements' => $mouvements,
+        ]);
+    }
+
+    #[Route('/admin/valider_mouvement/{id}', name: 'admin_valider_mouvement')]
+    public function validerMouvement($id, EntityManagerInterface $entityManager): Response
+    {
+        $mouvement = $entityManager->getRepository(MouvementSolde::class)->find($id);
+
+        if ($mouvement) {
+            // Mettre à jour le statut du mouvement
+            $mouvement->setStatut('valide');
+
+            // Mettre à jour le solde de l'utilisateur
+            $user = $mouvement->getUser();
+            if ($mouvement->isEstDepot()) {
+                $user->setSolde($user->getSolde() + $mouvement->getSomme());
+            } else {
+                $user->setSolde($user->getSolde() - $mouvement->getSomme());
+            }
+
+            $entityManager->flush();
+            $this->addFlash('success', 'Mouvement validé et solde mis à jour.');
+        } else {
+            $this->addFlash('error', 'Mouvement introuvable.');
+        }
+
+        return $this->redirectToRoute('admin_gestion_mouvements');
+    }
+
+    #[Route('/admin/refuser_mouvement/{id}', name: 'admin_refuser_mouvement')]
+    public function refuserMouvement($id, EntityManagerInterface $entityManager): Response
+    {
+        $mouvement = $entityManager->getRepository(MouvementSolde::class)->find($id);
+
+        if ($mouvement) {
+            // Mettre à jour le statut du mouvement
+            $mouvement->setStatut('refuse');
+            $entityManager->flush();
+            $this->addFlash('success', 'Mouvement refusé.');
+        } else {
+            $this->addFlash('error', 'Mouvement introuvable.');
+        }
+
+        return $this->redirectToRoute('admin_gestion_mouvements');
     }
 }
 ?>
