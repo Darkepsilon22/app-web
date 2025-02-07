@@ -27,9 +27,8 @@ class UserController extends AbstractController
             throw new \Exception("L'utilisateur connecté n'est pas valide.");
         }
 
-        // Récupérer tous les mouvements de solde pour l'utilisateur
         $mouvementsSolde = $entityManager->getRepository(MouvementSolde::class)
-            ->findBy(['user' => $userFromDb], ['dateMouvement' => 'DESC']);  // Tri par date décroissante
+            ->findBy(['user' => $userFromDb], ['dateMouvement' => 'DESC']); 
 
         if ($request->isMethod('POST')) {
             $somme = $request->request->get('somme');
@@ -50,7 +49,6 @@ class UserController extends AbstractController
             $entityManager->persist($mouvementSolde);
             $entityManager->flush();
 
-            // Renvoi de la réponse JSON pour actualiser la page ou faire une action côté client
             return new JsonResponse([
                 'status' => 'success',
                 'message' => 'Votre demande de dépôt/retrait a été enregistrée et est en attente de validation.',
@@ -66,7 +64,7 @@ class UserController extends AbstractController
 
         return $this->render('user/depot_retrait.html.twig', [
             'user' => $userFromDb,
-            'mouvementsSolde' => $mouvementsSolde,  // Passer les mouvements à la vue
+            'mouvementsSolde' => $mouvementsSolde,
         ]);
     }
 }
