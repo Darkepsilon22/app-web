@@ -122,12 +122,12 @@ public function vendreCrypto(Users $user, Crypto $crypto, float $quantite, strin
     // Mise à jour du solde utilisateur après vente
     $user->setSolde($user->getSolde() + $prixTotal);
 
-    // Enregistrement du mouvement de solde (dépôt)
-    $mouvementSolde = new MouvementSolde();
-    $mouvementSolde->setSomme($prixTotal);
-    $mouvementSolde->setDateMouvement(new \DateTimeImmutable($dateMouvement));
-    $mouvementSolde->setEstDepot(true); // Dépôt
-    $mouvementSolde->setUser($user);
+    // // Enregistrement du mouvement de solde (dépôt)
+    // $mouvementSolde = new MouvementSolde();
+    // $mouvementSolde->setSomme($prixTotal);
+    // $mouvementSolde->setDateMouvement(new \DateTimeImmutable($dateMouvement));
+    // $mouvementSolde->setEstDepot(true); // Dépôt
+    // $mouvementSolde->setUser($user);
 
     // Mise à jour de la quantité de crypto détenue
     $nouvelleQuantite = $cryptoUtilisateur->getQuantite() - $quantite;
@@ -151,7 +151,7 @@ public function vendreCrypto(Users $user, Crypto $crypto, float $quantite, strin
     // Persistance des données
     $this->entityManager->persist($user);
     $this->entityManager->persist($cryptoUtilisateur);
-    $this->entityManager->persist($mouvementSolde);
+    // $this->entityManager->persist($mouvementSolde);
     $this->entityManager->persist($mouvementCrypto);
     $this->entityManager->persist($commission);
 
