@@ -17,12 +17,10 @@ VALUES
 ('John', 'Doe', '1990-01-01', 'johndoe@example.com', 'password123', 1000.00, CURRENT_TIMESTAMP);
 
 
-INSERT INTO mouvement_solde (somme, date_mouvement, est_depot, Id_users)
-VALUES
-(50000.00, CURRENT_TIMESTAMP, TRUE, 1); 
+
 
 UPDATE users
-SET solde = 55000.00
+SET solde = 75000.00
 WHERE Id_users = 1;
 
 

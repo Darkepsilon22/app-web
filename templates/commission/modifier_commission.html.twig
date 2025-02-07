@@ -1,17 +1,103 @@
 {# templates/commission/modifier_commission.html.twig #}
-{% extends 'base.html.twig' %}
 
-{% block title %}Modifier la commission{% endblock %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier la commission</title>
 
-{% block body %}
+    <style>
+        body {
+            background-color: #f4f7fc;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #4e73df;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #495057;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(72, 116, 255, 0.25);
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: #4e73df;
+            border-color: #4e73df;
+            color: white;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2e59d9;
+        }
+
+        .alert {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
     <h1>Modifier la commission</h1>
 
     {# Affichage du message de succès #}
     {% for message in app.flashes('success') %}
-        <div class="alert alert-success">{{ message }}</div>
+        <div class="alert">{{ message }}</div>
     {% endfor %}
 
-    {# Formulaire pour modifier la commission #}
     <form method="POST">
         <div class="form-group">
             <label for="valeur_historique_pourcentage">Nouveau pourcentage de commission</label>
@@ -19,6 +105,14 @@
                    class="form-control" value="{{ historiqueCommission.valeurHistoriquePourcentage }}" step="0.01" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Sauvegarder</button>
+        <div class="form-group">
+            <label for="date_historique_pourcentage">Date et heure de la commission</label>
+            <input type="datetime-local" id="date_historique_pourcentage" name="date_historique_pourcentage"
+                   class="form-control" value="{{ currentDate|date('Y-m-d\\TH:i') }}" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Sauvegarder</button>
     </form>
-{% endblock %}
+
+</body>
+</html>
