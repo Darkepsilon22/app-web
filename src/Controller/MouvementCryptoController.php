@@ -61,8 +61,7 @@ public function acheterCrypto(Request $request): JsonResponse
         $user,
         $crypto,
         $data['quantite'],
-        $data['date_mouvement'],
-        $commission->getValeurHistoriquePourcentage()
+        $data['date_mouvement']
     );
 
     return new JsonResponse($result, isset($result['error']) ? 400 : 200);
