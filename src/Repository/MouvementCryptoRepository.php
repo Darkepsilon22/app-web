@@ -25,7 +25,8 @@ class MouvementCryptoRepository extends ServiceEntityRepository
             'u.prenom', 
             'u.nom',    
             'm.dateMouvement' ,
-            'm.quantite' 
+            'm.quantite',
+            'm.valeurCrypto'
         )
         ->join('m.crypto', 'c') 
         ->join('m.user', 'u')   
