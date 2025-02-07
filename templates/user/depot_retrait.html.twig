@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Depot / Retrait</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap/bootstrap.min.css') }}">
 </head>
 <body>
     <div class="container mt-5">
@@ -35,60 +35,66 @@
             <button type="submit" class="btn btn-primary">Valider</button>
         </form>
 
-        <h2 class="mt-5">Historique des Mouvements</h2>
-        <table class="table table-striped mt-4" id="mouvementTable">
+        <hr>
+
+        <h2>Historique des mouvements</h2>
+        <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">Montant</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Type d'opération</th>
-                    <th scope="col">Statut</th>
+                    <th>ID</th>
+                    <th>Montant</th>
+                    <th>Date du mouvement</th>
+                    <th>Type</th>
+                    <th>Statut</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Les mouvements de solde seront ajoutés ici par JavaScript -->
+            <tbody id="mouvement-list">
+                {% for mouvement in mouvementsSolde %}
+                    <tr>
+                        <td>{{ mouvement.idMouvementSolde }}</td>
+                        <td>{{ mouvement.somme }}</td>
+                        <td>{{ mouvement.dateMouvement|date("Y-m-d H:i:s") }}</td>
+                        <td>{{ mouvement.estDepot ? 'Dépôt' : 'Retrait' }}</td>
+                        <td>{{ mouvement.statut }}</td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
 
     <script>
-        // Fonction pour récupérer les mouvements de solde via AJAX
-        function loadMouvementsSolde() {
-            const userId = {{ user.idUsers }};
-            fetch(`/user/mouvements_solde/${userId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const tbody = document.querySelector("#mouvementTable tbody");
-                    tbody.innerHTML = ""; // Vider les anciens mouvements
-                    data.forEach(mouvement => {
-                        const row = document.createElement("tr");
-                        row.innerHTML = `
-                            <td>${mouvement.somme}</td>
-                            <td>${mouvement.date_mouvement}</td>
-                            <td>${mouvement.est_depot}</td>
-                            <td>${mouvement.statut}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                })
-                .catch(error => console.error("Erreur:", error));
+        function updateMouvementList(mouvement) {
+            const tableBody = document.getElementById('mouvement-list');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${mouvement.id}</td>
+                <td>${mouvement.somme}</td>
+                <td>${mouvement.date_mouvement}</td>
+                <td>${mouvement.est_depot}</td>
+                <td>${mouvement.statut}</td>
+            `;
+            tableBody.appendChild(newRow);
         }
 
-        // Charger les mouvements de solde au chargement de la page
-        document.addEventListener("DOMContentLoaded", loadMouvementsSolde);
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault(); 
 
-        // Charger à nouveau les mouvements après chaque dépôt ou retrait
-        document.querySelector("form").addEventListener("submit", function(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            fetch(event.target.action, {
+            const formData = new FormData(this);
+            const url = this.action;
+
+            fetch(url, {
                 method: 'POST',
-                body: formData
+                body: formData,
             })
-            .then(response => {
-                if (response.ok) {
-                    loadMouvementsSolde();  // Recharger les mouvements après l'opération
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    updateMouvementList(data.mouvement); // Mettre à jour la liste avec le nouveau mouvement
                 }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
             });
         });
     </script>
