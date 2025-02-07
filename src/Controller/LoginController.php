@@ -19,11 +19,10 @@ class LoginController extends AbstractController
         $this->loginService = $loginService;
     }
 
-    // Route pour afficher le formulaire de login
     #[Route('/', name: 'app_login')]
     public function login(): Response
     {
-        return $this->render('login.html.twig');  // Pass the 'error' variable as null
+        return $this->render('login.html.twig');  
     }
 
     #[Route('/login/send', name: 'app_login_send', methods: ['POST'])]
@@ -61,10 +60,8 @@ public function verifyPin(Request $request): Response
     try {
         $response = $this->loginService->verifyPin($email, $password, $pin);
 
-        // Si le PIN est valide, rediriger vers la page d'accueil
         return $this->render('accueil.html.twig');
     } catch (\Exception $e) {
-        // Capturer l'exception et définir un message d'erreur
         $errorMessage = "PIN invalide ou délai de 90 secondes dépassé.";
         return $this->render('check_pin.html.twig', [
             'email' => $email,
@@ -78,30 +75,25 @@ public function verifyPin(Request $request): Response
 public function resetSend(Request $request): Response
 {
     if ($request->isMethod('POST')) {
-        // Récupérer l'email et le mot de passe du formulaire
         $email = $request->request->get('email');
         $password = $request->request->get('password');
 
-        // Vérifier que l'email et le mot de passe sont valides
         if (!$email || !$password) {
             $this->addFlash('error', 'Veuillez entrer votre email et mot de passe.');
             return $this->redirectToRoute('app_reset_send');
         }
 
-        // Préparer les données pour l'API
         $data = [
             'email' => $email,
             'password' => $password,
         ];
 
-        // Envoi de la requête POST à l'API avec les données
         $client = HttpClient::create();
         try {
             $response = $client->request('POST', 'http://localhost:8080/api/user/resettentative/send', [
                 'json' => $data
             ]);
 
-            // Vérification de la réponse de l'API
             if ($response->getStatusCode() === 200) {
                 $this->addFlash('success', 'Le lien de réinitialisation a été envoyé.');
             } else {
@@ -111,7 +103,6 @@ public function resetSend(Request $request): Response
             $this->addFlash('error', 'Une erreur est survenue : ' . $e->getMessage());
         }
 
-        // Redirection vers le même formulaire avec les messages flash
         return $this->redirectToRoute('app_reset_send');
     }
 
