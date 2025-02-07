@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse</title>
+</head>
+<body>
+    <h2>Analyse des Cryptos</h2>
+
+    <form method="post">
+        <label for="typeAnalyse">Type d'Analyse :</label>
+        <select name="typeAnalyse" id="typeAnalyse" required>
+            <option value="min">Minimum</option>
+            <option value="max">Maximum</option>
+            <option value="moyenne">Moyenne</option>
+            <option value="ecart-type">Écart-Type</option>
+            <option value="1-quartile">1er Quartile</option>
+        </select>
+
+        <br>
+
+        <label>Crypto :</label>
+        <input type="checkbox" name="crypto[]" value="Tous" checked> Tous
+        {% for crypto in cryptos %}
+            <input type="checkbox" name="crypto[]" value="{{ crypto.idCrypto }}"> {{ crypto.intitule }}
+        {% endfor %}
+
+        <br>
+
+        <label for="dateMin">Date et Heure Min :</label>
+        <input type="datetime-local" name="dateMin" required value="2025-02-07T09:30:00" >
+
+        <label for="dateMax">Date et Heure Max :</label>
+        <input type="datetime-local" name="dateMax" required value="2025-02-07T09:31:00">
+
+        <br><br>
+
+        <button type="submit">Valider</button>
+    </form>
+
+    {% if resultats is not null %}
+        <h3>Résultats :</h3>
+        <table border="1">
+            <tr>
+                <th>id Crypto</th>
+                <th>Crypto</th>
+                <th>Valeur</th>
+            </tr>
+            {% for crypto, data in resultats %}
+                <tr>
+                    <td>{{ data.crypto_id }}</td>
+                    <td>{{ data.crypto_nom }}</td>
+                    <td>{{ data.valeur }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>
