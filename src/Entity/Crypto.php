@@ -58,15 +58,8 @@ class Crypto
         if ($id_users === null || $this->id_crypto === null) {
             return null;
         }
-    
         // Récupérer la quantité de crypto détenue par l'utilisateur
-        $quantite = $cryptoUtilisateurRepository->findByUserAndCrypto($id_users, $this->id_crypto);
-    
-        if ($quantite === null || $this->currentValeur === null) {
-            return 0;
-        }
-    
-        return $quantite;
+        return $cryptoUtilisateurRepository->findByUserAndCrypto($id_users, $this->id_crypto);
         // Calculer la valeur totale en multipliant la quantité par la valeur actuelle de la crypto
         // return $quantite * (float) $this->currentValeur;
     }

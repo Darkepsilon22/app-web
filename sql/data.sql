@@ -1,4 +1,4 @@
--- Active: 1726508341924@@127.0.0.1@3306@appcrypto
+-- Active: 1731263504649@@127.0.0.1@5432@crypto
 
 INSERT INTO crypto (intitule, current_valeur) VALUES
 ('Bitcoin', 50000.00),

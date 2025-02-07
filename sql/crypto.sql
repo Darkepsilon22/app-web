@@ -1,3 +1,4 @@
+-- Active: 1731263504649@@127.0.0.1@5432@crypto
 DROP DATABASE IF EXISTS crypto;
 CREATE DATABASE crypto;
 \c crypto;
