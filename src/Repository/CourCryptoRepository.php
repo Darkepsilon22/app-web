@@ -109,7 +109,7 @@ class CourCryptoRepository extends ServiceEntityRepository
                 $sql .= "AVG(c.valeur_dollar) AS valeur ";
                 break;
             case 'ecart-type':
-                $sql .= "STDDEV(c.valeur_dollar) AS valeur ";
+                $sql .= "STDDEV_POP(c.valeur_dollar) AS valeur ";
                 break;
             case '1-quartile':
                 $sql .= "PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY c.valeur_dollar) AS valeur ";
