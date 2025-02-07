@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Users;
 use App\Entity\Crypto;
 use App\Entity\CourCrypto;
+use App\Entity\HistoriqueCommission;
+
 use App\Service\MouvementCryptoService;
 use App\Repository\MouvementCryptoRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,48 +33,77 @@ class MouvementCryptoController extends AbstractController
     }
 
     #[Route('/achat_crypto', name: 'achat_crypto', methods: ['POST'])]
-    public function acheterCrypto(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-        $userId = $data['user_id'];
-        $cryptoId = $data['crypto_id'];
-        $quantite = $data['quantite'];
-        $dateMouvement = $data['date_mouvement'];
+public function acheterCrypto(Request $request): JsonResponse
+{
+    $data = json_decode($request->getContent(), true);
     
-        $user = $this->entityManager->getRepository(Users::class)->find($userId);
-        $crypto = $this->entityManager->getRepository(Crypto::class)->find($cryptoId);
-    
-        if (!$user || !$crypto) {
-            return new JsonResponse(['error' => 'Utilisateur ou crypto non trouvé'], 400);
-        }
-    
-        // Pass the date_mouvement to the service method
-        $result = $this->mouvementCryptoService->acheterCrypto($user, $crypto, $quantite, $dateMouvement);
-    
-        return new JsonResponse($result, isset($result['error']) ? 400 : 200);
+    if (!isset($data['user_id'], $data['crypto_id'], $data['quantite'], $data['date_mouvement'])) {
+        return new JsonResponse(['error' => 'Paramètres manquants'], 400);
     }
-    
-    #[Route('/vente_crypto', name: 'vente_crypto', methods: ['POST'])]
-    public function vendreCrypto(Request $request): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-        $userId = $data['user_id'];
-        $cryptoId = $data['crypto_id'];
-        $quantite = $data['quantite'];
-        $dateMouvement = $data['date_mouvement'];
-    
-        $user = $this->entityManager->getRepository(Users::class)->find($userId);
-        $crypto = $this->entityManager->getRepository(Crypto::class)->find($cryptoId);
-    
-        if (!$user || !$crypto) {
-            return new JsonResponse(['error' => 'Utilisateur ou crypto non trouvé'], 400);
-        }
-    
-        // Pass the date_mouvement to the service method
-        $result = $this->mouvementCryptoService->vendreCrypto($user, $crypto, $quantite, $dateMouvement);
-    
-        return new JsonResponse($result, isset($result['error']) ? 400 : 200);
+
+    $user = $this->entityManager->getRepository(Users::class)->find($data['user_id']);
+    $crypto = $this->entityManager->getRepository(Crypto::class)->find($data['crypto_id']);
+
+    if (!$user || !$crypto) {
+        return new JsonResponse(['error' => 'Utilisateur ou crypto non trouvé'], 400);
     }
+
+    // Récupération de la commission la plus récente
+    $commission = $this->entityManager->getRepository(HistoriqueCommission::class)
+    ->findOneBy([], ['dateHistoriquePourcentage' => 'DESC']);
+
+
+    if (!$commission) {
+        return new JsonResponse(['error' => 'Aucune commission définie'], 400);
+    }
+
+    $result = $this->mouvementCryptoService->acheterCrypto(
+        $user,
+        $crypto,
+        $data['quantite'],
+        $data['date_mouvement'],
+        $commission->getValeurHistoriquePourcentage()
+    );
+
+    return new JsonResponse($result, isset($result['error']) ? 400 : 200);
+}
+
+#[Route('/vente_crypto', name: 'vente_crypto', methods: ['POST'])]
+public function vendreCrypto(Request $request): JsonResponse
+{
+    $data = json_decode($request->getContent(), true);
+    
+    if (!isset($data['user_id'], $data['crypto_id'], $data['quantite'], $data['date_mouvement'])) {
+        return new JsonResponse(['error' => 'Paramètres manquants'], 400);
+    }
+
+    $user = $this->entityManager->getRepository(Users::class)->find($data['user_id']);
+    $crypto = $this->entityManager->getRepository(Crypto::class)->find($data['crypto_id']);
+
+    if (!$user || !$crypto) {
+        return new JsonResponse(['error' => 'Utilisateur ou crypto non trouvé'], 400);
+    }
+
+    // Récupération de la commission la plus récente
+    $commission = $this->entityManager->getRepository(HistoriqueCommission::class)
+    ->findOneBy([], ['dateHistoriquePourcentage' => 'DESC']);
+
+
+    if (!$commission) {
+        return new JsonResponse(['error' => 'Aucune commission définie'], 400);
+    }
+
+    $result = $this->mouvementCryptoService->vendreCrypto(
+        $user,
+        $crypto,
+        $data['quantite'],
+        $data['date_mouvement'],
+        $commission->getValeurHistoriquePourcentage()
+    );
+
+    return new JsonResponse($result, isset($result['error']) ? 400 : 200);
+}
+
     
 
     #[Route('/cryptocurrency/{id}', name: 'crypto_price_graph', methods: ['GET'])]

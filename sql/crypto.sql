@@ -16,19 +16,12 @@ CREATE TABLE users(
    UNIQUE(email)
 );
 
-CREATE TABLE users_admin(
-   Id_users_admin SERIAL,
-   username VARCHAR(255)  NOT NULL,
-   password VARCHAR(255)  NOT NULL,
-   PRIMARY KEY(Id_users_admin),
-   UNIQUE(username)
-);
-
 CREATE TABLE mouvement_solde(
    Id_mouvement_solde SERIAL,
    somme NUMERIC(19,5) NOT NULL,
    date_mouvement TIMESTAMP NOT NULL,
    est_depot BOOLEAN NOT NULL,
+   statut VARCHAR(50)  NOT NULL DEFAULT  'en_attente',
    Id_users INTEGER NOT NULL,
    PRIMARY KEY(Id_mouvement_solde),
    FOREIGN KEY(Id_users) REFERENCES users(Id_users)
@@ -82,10 +75,10 @@ CREATE TABLE commission(
    FOREIGN KEY(Id_mouvement_crypto) REFERENCES mouvement_crypto(Id_mouvement_crypto)
 );
 
-CREATE TABLE historique_commission(
+CREATE TABLE historique_pourcentage_commission(
    Id_historique_commission SERIAL,
-   date_historique TIMESTAMP NOT NULL,
-   valeur_historique NUMERIC(15,2)   NOT NULL,
+   date_historique_porucentage TIMESTAMP NOT NULL,
+   valeur_historique_pourcentage NUMERIC(15,2)   NOT NULL,
    PRIMARY KEY(Id_historique_commission)
 );
 
@@ -99,4 +92,10 @@ CREATE TABLE crypto_utilisateur(
    FOREIGN KEY(Id_crypto) REFERENCES crypto(Id_crypto)
 );
 
-
+CREATE TABLE users_admin(
+   Id_users_admin SERIAL,
+   username VARCHAR(255)  NOT NULL,
+   password VARCHAR(255)  NOT NULL,
+   PRIMARY KEY(Id_users_admin),
+   UNIQUE(username)
+);
