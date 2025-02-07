@@ -108,10 +108,8 @@ public function vendreCrypto(Users $user, Crypto $crypto, float $quantite, strin
 
     $commissionPourcentage = $dernierHistoriqueCommission->getValeurHistoriquePourcentage();
 
-    // Calcul du prix total sans commission (la commission ne s’applique qu’après la vente)
     $prixTotal = $crypto->getCurrentValeur() * $quantite;
 
-    // Récupérer la quantité de crypto détenue par l'utilisateur
     $cryptoUtilisateur = $this->entityManager->getRepository(CryptoUtilisateur::class)
         ->findOneBy(['user' => $user, 'crypto' => $crypto]);
 

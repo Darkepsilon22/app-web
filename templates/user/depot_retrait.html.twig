@@ -10,7 +10,6 @@
     <div class="container mt-5">
         <h1 class="text-center">Depot / Retrait</h1>
 
-        <!-- Affichage des messages flash (succès, erreur, etc.) -->
         {% for label, messages in app.flashes %}
             <div class="alert alert-{{ label }}">
                 {% for message in messages %}
@@ -19,7 +18,6 @@
             </div>
         {% endfor %}
 
-        <!-- Formulaire de dépôt/retrait -->
         <form method="POST" action="{{ path('user_depot_retrait', {'id': user.idUsers}) }}">
             <div class="mb-3">
                 <label for="somme" class="form-label">Montant</label>
@@ -36,6 +34,63 @@
 
             <button type="submit" class="btn btn-primary">Valider</button>
         </form>
+
+        <h2 class="mt-5">Historique des Mouvements</h2>
+        <table class="table table-striped mt-4" id="mouvementTable">
+            <thead>
+                <tr>
+                    <th scope="col">Montant</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Type d'opération</th>
+                    <th scope="col">Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les mouvements de solde seront ajoutés ici par JavaScript -->
+            </tbody>
+        </table>
     </div>
+
+    <script>
+        // Fonction pour récupérer les mouvements de solde via AJAX
+        function loadMouvementsSolde() {
+            const userId = {{ user.idUsers }};
+            fetch(`/user/mouvements_solde/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector("#mouvementTable tbody");
+                    tbody.innerHTML = ""; // Vider les anciens mouvements
+                    data.forEach(mouvement => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${mouvement.somme}</td>
+                            <td>${mouvement.date_mouvement}</td>
+                            <td>${mouvement.est_depot}</td>
+                            <td>${mouvement.statut}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error("Erreur:", error));
+        }
+
+        // Charger les mouvements de solde au chargement de la page
+        document.addEventListener("DOMContentLoaded", loadMouvementsSolde);
+
+        // Charger à nouveau les mouvements après chaque dépôt ou retrait
+        document.querySelector("form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            fetch(event.target.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadMouvementsSolde();  // Recharger les mouvements après l'opération
+                }
+            });
+        });
+    </script>
 </body>
 </html>
