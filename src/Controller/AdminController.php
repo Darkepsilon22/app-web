@@ -4,14 +4,15 @@ namespace App\Controller;
 
 use App\Entity\UsersAdmin;
 use App\Entity\MouvementSolde;
+use App\Entity\Users;
+use App\Repository\MouvementCryptoRepository;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
-
+use Doctrine\Persistence\ManagerRegistry;
 
 class AdminController extends AbstractController
 {
@@ -110,6 +111,34 @@ class AdminController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_gestion_mouvements');
+    }
+
+    #[Route('/admin/statusers', name: 'admin_statuser')]
+    public function statuser(
+        ManagerRegistry $doctrine,
+        MouvementCryptoRepository $mouvementCryptoRepository
+    ): Response {
+        $users = $doctrine->getRepository(Users::class)->findAll();
+        $data = [];
+
+        foreach ($users as $user) {
+            $userId = $user->getIdUsers();
+            $totalAchat = $mouvementCryptoRepository->getTotalAchatByUser($userId);
+            $totalVente = $mouvementCryptoRepository->getTotalVenteByUser($userId);
+
+            $data[] = [
+                'id' => $userId,
+                'prenom' => $user->getPrenom(),
+                'nom' => $user->getNom(),
+                'solde' => $user->getSolde(),
+                'totalAchat' => $totalAchat,
+                'totalVente' => $totalVente,
+            ];
+        }
+
+        return $this->render('admin/statut_users.html.twig', [
+            'usersData' => $data
+        ]);
     }
 }
 ?>
