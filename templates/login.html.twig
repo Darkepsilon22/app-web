@@ -25,22 +25,25 @@
             <p class="text-center mt-4 text-gray-400 dark:text-gray-600"><a href="{{ path('app_reset_send') }}" class="text-blue-500">Réinitialiser nombre de tentative</a></p>
         </div>
         {% if error is defined %}
-            <div class="notification" id="errorNotification" role="alert" aria-live="assertive">
-                {{ error }}
-            </div>
+            <script>
+                Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "{{ error|raw }}"
+                });
+            </script>
         {% endif %}
     </div> 
 </main>
-<script>
-    // Masquer la notification après 5 secondes
-    setTimeout(() => {
-        const notification = document.getElementById('errorNotification');
-        if (notification) {
-            notification.classList.add('hide');
-            setTimeout(() => {
-                notification.remove();
-            }, 300);
-        }
-    }, 5000);
-</script>
+{% if success is defined %}
+    <script>
+        Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "{{ success|raw }}",
+        showConfirmButton: false,
+        timer: 1500
+        });
+    </script>
+{% endif %}
 {% endblock %}

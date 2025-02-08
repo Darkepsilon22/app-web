@@ -4,15 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Crypto{% endblock %}</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class' // Active le mode sombre basé sur 'class'
-        };
-    </script>
-
-    <!-- Font Awesome & Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.16.0/dist/sweetalert2.all.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.16.0/dist/sweetalert2.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
@@ -28,6 +22,10 @@
     </style>    
 
     <script>
+        // Active le mode sombre basé sur 'class'
+        tailwind.config = {
+            darkMode: 'class'
+        };
         function toggleTheme() {
             const html = document.documentElement; // Modifier <html> au lieu de <body>
             const isDark = html.classList.toggle('dark'); // Ajoute ou enlève 'dark'

@@ -1,45 +1,52 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Vérification du Code PIN</title>
-    <link rel="stylesheet" href="{{ asset('css/pin.css') }}">
-    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
+{% extends 'base.html.twig' %}
 
+{% block title %}Connexion{% endblock %}
 
-</head>
-<body>
-    <form action="{{ path('app_login_verify') }}" method="POST">
-        <p>Un code PIN a été envoyé à <strong>{{ email }}</strong>. Veuillez le saisir ci-dessous.</p>
-
-        <!-- Champs cachés pour l'email et le mot de passe -->
-        <input type="text" name="email" value="{{ email }}" class="hidden">
-        <input type="password" name="password" value="{{ password }}" class="hidden">
-
-        <!-- Champ pour le code PIN -->
-        <label for="pin">Code PIN</label>
-        <input type="number" name="pin" id="pin" required placeholder="Saisissez votre code PIN">
-
-        <!-- Bouton de soumission -->
-        <button type="submit">Vérifier le code PIN</button>
-    </form>
-
-    {% if success is defined %}
-        <div class="notification success" id="successNotification">
-            {{ success }}
+{% block body %}
+<main class="flex items-center justify-center h-[80vh] px-4 flex-grow">
+    <div class="flex bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-2xl m-4">
+        <div class="w-full px-4 flex flex-col justify-center">
+                <p class="text-center mt-4 text-gray-400 dark:text-gray-600">
+                    Un code PIN a été envoyé à 
+                    <strong>{{ email }}</strong>
+                    . Veuillez le saisir ci-dessous.
+                </p>
+            <form action="{{ path('app_login_verify') }}" method="POST">
+                <div class="mb-4">
+                    <label class="block text-gray-400 dark:text-gray-600">Email</label>
+                    <input type="email" name="email" placeholder="Entrez votre email" value="{{ email }}" class="w-full p-2 rounded bg-gray-700 dark:bg-gray-200 text-white dark:text-black" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-400 dark:text-gray-600">Mot de passe</label>
+                    <input type="password" name="password" placeholder="Entrez votre mot de passe" value="{{ password }}" class="w-full p-2 rounded bg-gray-700 dark:bg-gray-200 text-white dark:text-black" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-400 dark:text-gray-600">Saisissez votre code PIN</label>
+                    <input type="number" name="pin" placeholder="Saisissez votre code PIN" class="w-full p-2 rounded bg-gray-700 dark:bg-gray-200 text-white dark:text-black" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-700 text-white dark:bg-blue-500 p-2 rounded">Vérifier le code PIN</button>
+            </form>
         </div>
-    {% endif %}
-
+        {% if error is defined %}
+            <script>
+                Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "{{ error|raw }}"
+                });
+            </script>
+        {% endif %}
+    </div> 
+</main>
+{% if success is defined %}
     <script>
-        // Masquer la notification après 5 secondes
-        setTimeout(() => {
-            const notification = document.getElementById('successNotification');
-            if (notification) {
-                notification.classList.add('hide');
-                setTimeout(() => {
-                    notification.remove();
-                }, 500); // Correspond à la durée de l'animation slideOut
-            }
-        }, 5000); // 5 secondes
+        Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "{{ success|raw }}",
+        showConfirmButton: false,
+        timer: 1500
+        });
     </script>
-</body>
-</html>
+{% endif %}
+{% endblock %}
