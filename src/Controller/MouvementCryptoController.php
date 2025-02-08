@@ -138,12 +138,23 @@ public function vendreCrypto(Request $request): JsonResponse
         ]);
     }
 
-    #[Route('/historique/{userId}', name: 'crypto_price_updates', methods: ['GET'])]
+    #[Route('/transactions/{userId}', name: 'transactions_user', methods: ['GET'])]
     public function index(int $userId): Response
     {
         $historique = $this->mouvementCryptoRepository->getHistoriqueByUser($userId);
 
         return $this->render('historique/historique.html.twig', [
+            'historique' => $historique,
+        ]);
+    }
+
+    #[Route('/transactions', name: 'transactions_users', methods: ['GET'])]
+    public function historiques(): Response
+    {
+        $historique = $this->mouvementCryptoRepository->getHistorique();
+
+        
+        return $this->render('historique/transactions.html.twig', [
             'historique' => $historique,
         ]);
     }

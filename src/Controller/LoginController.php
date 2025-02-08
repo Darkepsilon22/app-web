@@ -19,12 +19,6 @@ class LoginController extends AbstractController
         $this->loginService = $loginService;
     }
 
-    #[Route('/', name: 'app_login')]
-    public function login(): Response
-    {
-        return $this->render('login.html.twig');  
-    }
-
     #[Route('/login/send', name: 'app_login_send', methods: ['POST'])]
 public function sendPin(Request $request): Response
 {

@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Transactions{% endblock %}
+
+{% block body %}
+<main class="flex flex-col items-center text-center mt-24 px-4">
+    <h1 class="text-2xl font-bold text-center mb-6 text-white dark:text-gray-900">Historique des Transactions</h1>
+    <div class="overflow-x-auto w-full max-w-5xl max-h-[60vh] rounded-lg shadow-lg">
+        <table class="w-full border-collapse border border-gray-300 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden text-sm sm:text-base">
+            <thead class="bg-gray-900 text-white dark:bg-gray-700">
+                <tr>
+                    <th class="p-3 sm:p-4 border border-gray-500">ID</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Date</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Utilisateur</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Crypto</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Quantité</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Cours</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Type</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white text-black dark:bg-gray-200">
+                {% for mouvement in historique %}
+                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-300 {% if mouvement.typeMouvement == 'Vente' %}bg-red-200{% elseif mouvement.typeMouvement == 'Achat' %}bg-green-200{% endif %}">
+                        <td class="p-3 sm:p-4 border">{{ mouvement.idMouvementCrypto }}</td>
+                        <td class="p-3 sm:p-4 border">{{ mouvement.dateMouvement|date('d/m/Y H:i') }}</td>
+                        <td class="p-3 sm:p-4 border">{{ mouvement.prenom }} {{ mouvement.nom }}</td>
+                        <td class="p-3 sm:p-4 border">{{ mouvement.intitule }}</td>
+                        <td class="p-3 sm:p-4 border">{{ mouvement.quantite }}</td>
+                        <td class="p-3 sm:p-4 border">{{ mouvement.valeurCrypto }} $</td>
+                        <td class="p-3 sm:p-4 border font-bold">
+                            {{ mouvement.typeMouvement }}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-300">
+                        <td class="p-3 sm:p-4 border text-center" colspan="7">Aucun mouvement trouvé.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}

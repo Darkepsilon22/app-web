@@ -3,12 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Portefeuille - Crypto{% endblock %}</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-        <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
+    <title>{% block title %}Crypto{% endblock %}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class' // Active le mode sombre basé sur 'class'
+        };
+    </script>
 
+    <!-- Font Awesome & Chart.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <style>
+        .fade-in {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+        }
+    </style>    
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement; // Modifier <html> au lieu de <body>
+            const isDark = html.classList.toggle('dark'); // Ajoute ou enlève 'dark'
+            localStorage.setItem('theme', isDark ? 'dark' : 'light'); // Sauvegarde l'état
+            updateIcons();
+        }
+
+        function updateIcons() {
+            document.getElementById('moonIcon').classList.toggle('hidden', document.documentElement.classList.contains('dark'));
+            document.getElementById('sunIcon').classList.toggle('hidden', !document.documentElement.classList.contains('dark'));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+            updateIcons();
+        });
+    </script>
 </head>
-<body>
+<body class="bg-blue-900 text-white dark:bg-blue-100 dark:text-black min-h-screen flex flex-col">
+<header class="flex justify-between items-center p-4 bg-blue-900 dark:bg-blue-100 w-full fixed top-0 z-10">
+    <div class="flex items-center space-x-4">
+        <!-- Logo -->
+        <a href="{{ path('page_acceuil') }}">
+            <img src="{{ asset('images/logo.png') }}" alt="Cryptomada logo" class="h-10"/>
+        </a>
+
+        <!-- Menu Desktop -->
+        <nav class="hidden md:flex space-x-4">
+            <!-- Dropdown pour Cours des cryptos -->
+            <div class="relative">
+                <button id="dropdown-button" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black flex items-center">
+                    Cours des cryptos
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="dropdown-menu" class="hidden absolute left-0 mt-2 w-48 bg-blue-900 dark:bg-blue-100 shadow-lg rounded-lg text-sm">
+                    <a href="#" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Graphique</a>
+                    <a href="#" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Cours</a>
+                    <a href="{{ path('page_analyse_crypto') }}" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Analyse</a>
+                </div>
+            </div>
+            <a href="{{ path('transactions_users') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Achats et ventes</a>
+        </nav>
+    </div>
+
+    <!-- Menu Mobile -->
+    <div id="mobile-menu" class="hidden absolute top-16 left-0 w-full bg-blue-900 dark:bg-blue-100 shadow-md md:hidden">
+        <nav class="flex flex-col space-y-2 p-4">
+            <div class="relative">
+                <button id="dropdown-button-mobile" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black flex items-center">
+                    Cours des cryptos
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="dropdown-menu-mobile" class="hidden absolute left-0 mt-2 w-48 bg-blue-900 dark:bg-blue-100 shadow-lg rounded-lg text-sm">
+                    <a href="#" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Graphique</a>
+                    <a href="#" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Cours</a>
+                    <a href="#" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Analyse</a>
+                </div>
+            </div>
+            <a href="{{ path('transactions_users') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Achats et ventes</a>
+        </nav>
+    </div>
+
+    <!-- Boutons de droite -->
+    <div class="flex items-center space-x-4">
+    <!-- Bouton menu pour mobile -->
+        <button id="menu-btn" class="md:hidden text-gray-400 dark:text-gray-600 focus:outline-none">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+        <a href="{{ path('page_login') }}" class="bg-gray-800 text-white px-4 py-2 rounded dark:bg-gray-300 dark:text-black">Connexion</a>
+        <a href="{{ path('page_register') }}" class="bg-blue-700 text-white px-4 py-2 rounded dark:bg-blue-500 dark:text-black">Inscription</a>
+        <button onclick="toggleTheme()" class="text-gray-400 dark:text-gray-600">
+            <i id="moonIcon" class="fas fa-moon"></i>
+            <i id="sunIcon" class="fas fa-sun hidden"></i>
+        </button>
+    </div>
+</header>
+
+<script>
+    // Toggle dropdown menu
+    document.getElementById('dropdown-button').addEventListener('click', function () {
+        document.getElementById('dropdown-menu').classList.toggle('hidden');
+    });
+
+    // Toggle dropdown menu mobile
+    document.getElementById('dropdown-button-mobile').addEventListener('click', function () {
+        document.getElementById('dropdown-menu-mobile').classList.toggle('hidden');
+    });
+
+    // Toggle menu pour mobile
+    document.getElementById('menu-btn').addEventListener('click', function () {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+</script>
+
     {% block body %}{% endblock %}
 </body>
+<footer class="bg-gray-800 text-white dark:bg-gray-300 dark:text-black p-8 mt-auto">
+    <div class="flex justify-between items-center">
+        <div>
+            <h3 class="text-lg font-bold">À propos de nous</h3>
+            <p class="mt-4">Cryptomada est la plus grande plateforme d'échange de cryptomonnaies au monde.</p>
+        </div>
+        <div class="flex space-x-4">
+            <a href="#"><i class="fab fa-facebook-f text-2xl"></i></a>
+            <a href="#"><i class="fab fa-twitter text-2xl"></i></a>
+            <a href="#"><i class="fab fa-instagram text-2xl"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in text-2xl"></i></a>
+        </div>
+    </div>
+</footer>
 </html>

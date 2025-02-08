@@ -39,6 +39,29 @@ class MouvementCryptoRepository extends ServiceEntityRepository
         ->getResult(); 
 }
 
+public function getHistorique()
+{
+    return $this->createQueryBuilder('m')
+        ->select(
+            'm.id_mouvement_crypto AS idMouvementCrypto', 
+            'CASE WHEN m.estAchat = true THEN :achat ELSE :vente END AS typeMouvement',
+            'c.id_crypto AS idCrypto', 
+            'c.intitule', 
+            'u.prenom', 
+            'u.nom',    
+            'm.dateMouvement' ,
+            'm.quantite',
+            'm.valeurCrypto'
+        )
+        ->join('m.crypto', 'c') 
+        ->join('m.user', 'u')   
+        ->setParameter('achat', 'Achat')
+        ->setParameter('vente', 'Vente')
+        ->orderBy('m.dateMouvement', 'DESC')
+        ->getQuery()
+        ->getResult(); 
+}
+
 public function getTotalAchatByUser(int $userId): float
 {
     return (float) $this->createQueryBuilder('m')

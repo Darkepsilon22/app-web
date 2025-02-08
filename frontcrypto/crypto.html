@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Marché Crypto</title>
+    <style>
+        .fade {
+            transition: all 0.5s ease-in-out;
+        }
+        .slide-transition {
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+        .carousel-track {
+            display: flex;
+            gap: 10px;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-item {
+            min-width: calc(100% / 3 - 10px);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex justify-center items-center min-h-screen">
+    <div class="w-full max-w-2xl p-4 bg-gray-800 rounded-lg shadow-lg">
+        <h2 class="text-xl font-semibold">Marché des Cryptos</h2>
+        <p class="text-gray-400 text-sm">Suivez en temps réel l'évolution du marché des cryptomonnaies et prenez les meilleures décisions !</p>
+        
+        <div class="carousel-container relative">
+            <div id="cryptoCarousel" class="carousel-track grid-cols-3 gap-4 my-4 transition-transform duration-500 ease-in-out">
+            </div>
+            <button onclick="prevSlide()" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-600 p-2 rounded"><</button>
+            <button onclick="nextSlide()" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-600 p-2 rounded">></button>
+        </div>
+        
+        <div class="bg-gray-700 p-4 rounded-lg">
+            <div class="flex border-b border-gray-600 mb-4">
+                <button id="buyBtn" class="flex-1 py-2 bg-blue-500 text-white font-semibold fade" onclick="switchMode('acheter')">Acheter Crypto</button>
+                <button id="sellBtn" class="flex-1 py-2 bg-gray-600 text-gray-300 fade" onclick="switchMode('vendre')">Vendre Crypto</button>
+            </div>
+            <label class="block text-sm mb-1">Sélectionner une Crypto</label>
+            <select class="w-full p-2 bg-gray-600 rounded">
+                <option>Bitcoin (BTC)</option>
+                <option>Ethereum</option>
+                <option>Binance Coin</option>
+                <option>Stellar</option>
+                <option>Ripple</option>
+            </select>
+            <label class="block text-sm mt-3 mb-1">Quantité (Crypto)</label>
+            <input type="number" class="w-full p-2 bg-gray-600 rounded" value="0">
+            <p class="text-lg font-semibold mt-3">$0.00</p>
+            <button class="w-full mt-4 p-2 bg-green-500 text-white rounded-lg font-semibold fade" id="actionButton">Acheter Crypto</button>
+        </div>
+    </div>
+    <script>
+        const cryptos = [
+            { name: "Ethereum", price: "$612.43", change: "-3.12%" },
+            { name: "Binance Coin", price: "$91.52", change: "+1.14%" },
+            { name: "Stellar", price: "$0.28", change: "+4.14%" },
+            { name: "Bitcoin", price: "$45,000", change: "-0.5%" },
+            { name: "Ripple", price: "$1.05", change: "+2.7%" }
+        ];
+        
+        let currentIndex = 0;
+        const carousel = document.getElementById("cryptoCarousel");
+        
+        function renderCarousel() {
+            carousel.innerHTML = "";
+            const loopedCryptos = [...cryptos, ...cryptos]; // Duplicate items for smooth looping
+            loopedCryptos.forEach(crypto => {
+                const div = document.createElement("div");
+                div.className = "carousel-item p-4 bg-gray-700 rounded-lg";
+                div.innerHTML = `<p class='text-lg font-semibold translate-x-8'>${crypto.name}</p>
+                                 <p class='text-gray-300 translate-x-8'>${crypto.price}</p>
+                                 <p class='price-change translate-x-8'>${crypto.change}</p>`;
+                carousel.appendChild(div);
+            });
+            updatePriceColors();
+            updateCarouselPosition();
+        }
+        
+        function updateCarouselPosition() {
+            const offset = -currentIndex * (34.3);
+            carousel.style.transform = `translateX(${offset}%)`;
+        }
+        
+        function nextSlide() {
+            if (currentIndex >= cryptos.length) {
+                currentIndex = 0;
+                carousel.style.transition = "none";
+                updateCarouselPosition();
+                setTimeout(() => {
+                    carousel.style.transition = "transform 0.5s ease-in-out";
+                    currentIndex++;
+                    updateCarouselPosition();
+                }, 50);
+            } else {
+                currentIndex++;
+                updateCarouselPosition();
+            }
+        }
+        
+        function prevSlide() {
+            if (currentIndex <= 0) {
+                currentIndex = cryptos.length;
+                carousel.style.transition = "none";
+                updateCarouselPosition();
+                setTimeout(() => {
+                    carousel.style.transition = "transform 0.5s ease-in-out";
+                    currentIndex--;
+                    updateCarouselPosition();
+                }, 50);
+            } else {
+                currentIndex--;
+                updateCarouselPosition();
+            }
+        }
+
+        function switchMode(mode) {
+            const buyBtn = document.getElementById('buyBtn');
+            const sellBtn = document.getElementById('sellBtn');
+            const actionButton = document.getElementById('actionButton');
+            
+            buyBtn.classList.add('fade');
+            sellBtn.classList.add('fade');
+            actionButton.classList.add('fade');
+            
+            if (mode === 'acheter') {
+                buyBtn.classList.add('bg-blue-500', 'text-white');
+                buyBtn.classList.remove('bg-gray-600', 'text-gray-300');
+                
+                sellBtn.classList.add('bg-gray-600', 'text-gray-300');
+                sellBtn.classList.remove('bg-blue-500', 'text-white');
+                
+                actionButton.textContent = 'Acheter Crypto';
+                actionButton.classList.add('bg-green-500');
+                actionButton.classList.remove('bg-red-500');
+            } else {
+                sellBtn.classList.add('bg-blue-500', 'text-white');
+                sellBtn.classList.remove('bg-gray-600', 'text-gray-300');
+                
+                buyBtn.classList.add('bg-gray-600', 'text-gray-300');
+                buyBtn.classList.remove('bg-blue-500', 'text-white');
+                
+                actionButton.textContent = 'Vendre Crypto';
+                actionButton.classList.add('bg-red-500');
+                actionButton.classList.remove('bg-green-500');
+            }
+        }
+        
+        function updatePriceColors() {
+            document.querySelectorAll('.price-change').forEach(el => {
+                const value = parseFloat(el.textContent);
+                if (value < 0) {
+                    el.classList.add('text-red-500');
+                    el.classList.remove('text-green-500');
+                } else {
+                    el.classList.add('text-green-500');
+                    el.classList.remove('text-red-500');
+                }
+            });
+        }
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            renderCarousel();
+            setInterval(nextSlide, 3000);
+        });
+    </script>
+</body>
+</html>
