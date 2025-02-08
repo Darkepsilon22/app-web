@@ -75,7 +75,7 @@ public function resetSend(Request $request): Response
         try {
             $response = $this->loginService->resetSend($email, $password);
     
-            $message = 'Le lien de réinitialisation a été envoyé a votre mail.';
+            $message = 'Un email de réinitialisation a été envoyé.';
             return $this->render('login.html.twig', [
                 'success' => $message,
             ]);
@@ -89,10 +89,6 @@ public function resetSend(Request $request): Response
 
     return $this->render('reset_password.html.twig');
 }
-
-
-
-
 }
 
 

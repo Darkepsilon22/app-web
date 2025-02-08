@@ -24,17 +24,17 @@
             <p class="text-center mt-4 text-gray-400 dark:text-gray-600">Pas encore de compte ? <a href="{{ path('page_register') }}" class="text-blue-500">Inscrivez-vous</a></p>
             <p class="text-center mt-4 text-gray-400 dark:text-gray-600"><a href="{{ path('app_reset_send') }}" class="text-blue-500">Réinitialiser nombre de tentative</a></p>
         </div>
-        {% if error is defined %}
-            <script>
-                Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "{{ error|raw }}"
-                });
-            </script>
-        {% endif %}
     </div> 
 </main>
+{% if error is defined %}
+    <script>
+        Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "{{ error|raw }}"
+        });
+    </script>
+{% endif %}
 {% if success is defined %}
     <script>
         Swal.fire({
