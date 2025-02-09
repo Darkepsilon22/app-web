@@ -21,11 +21,24 @@
         100% { transform: rotate(360deg); }
     }
 </style>
-<main class="flex flex-wrap justify-center items-start px-4 flex-grow mt-20 gap-8 container mx-auto mb-10">
-    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-10xl">
-        <h2 id="cryptoTitle" class="text-2xl font-semibold text-center text-white dark:text-black">Cryptos</h2>
+<main class="flex flex-col items-center text-center mt-24 px-4">
+    <h1 class="text-2xl font-bold text-center mb-6 text-white dark:text-gray-900 animate__animated animate__fadeInUp">
+        Cours des Cryptos
+    </h1>
+    
+    <div class="overflow-x-auto w-full max-w-5xl max-h-[60vh] rounded-lg shadow-lg animate__animated animate__fadeInUp animate__delay-0.5s">
+        <table class="w-full border-collapse border border-gray-300 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden text-sm sm:text-base">
+            <thead class="bg-gray-900 text-white dark:bg-gray-700">
+                <tr>
+                    <th class="p-3 sm:p-4 border border-gray-500">ID Crypto</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Nom Crypto</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Valeur (USD)</th>
+                </tr>
+            </thead>
+            <tbody id="tbody" class="bg-white text-black dark:bg-gray-200">
+            </tbody>
+        </table>
         <div id="cryptoLoader" class="loader"></div>
-        <div id="resultats" class="mt-4"></div>
     </div>
 
 {% if error is defined %}
@@ -41,14 +54,14 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const cryptoLoader = document.getElementById("cryptoLoader");
-        const resultDiv = document.getElementById("resultats");
+        const tbody = document.getElementById("tbody");
         // Affichage du loader pendant la récupération des cryptos
         function fetchCryptoData() {
             fetch('/cryptos')
                 .then(response => response.json())
                 .then(data => {
                     cryptoLoader.style.display = 'none';  // Cacher le loader une fois les cryptos récupérés
-                    resultDiv.innerHTML = "";
+                    tbody.innerHTML = "";
                     if (!data.cryptos || data.cryptos.length === 0) {
                         const option  = document.createElement('option');
                         option.textContent = 'Pas de cryptos';
@@ -57,46 +70,19 @@
                         return;
                     }
 
-                    // Création du tableau
-                    const table = document.createElement("table");
-                    table.classList.add('w-full', 'border-collapse', 'border', 'border-gray-300', 'dark:border-gray-500');
-
-                    // Création de l'en-tête du tableau
-                    const thead = document.createElement("thead");
-                    const tr = document.createElement("tr");
-                    tr.classList.add('bg-gray-800', 'text-white', 'dark:bg-gray-300', 'dark:text-black');
-                    const th1 = document.createElement("th");
-                    th1.classList.add('border', 'border-gray-300', 'dark:border-gray-500', 'p-2');
-                    th1.textContent = "ID Crypto";
-                    const th2 = document.createElement("th");
-                    th2.classList.add('border', 'border-gray-300', 'dark:border-gray-500', 'p-2');
-                    th2.textContent = "Nom Crypto";
-                    const th3 = document.createElement("th");
-                    th3.classList.add('border', 'border-gray-300', 'dark:border-gray-500', 'p-2');
-                    th3.textContent = "Valeur (USD)";
-
-                    tr.appendChild(th1);
-                    tr.appendChild(th2);
-                    tr.appendChild(th3);
-                    thead.appendChild(tr);
-                    table.appendChild(thead);
-
-                    // Création du corps du tableau avec les données
-                    const tbody = document.createElement("tbody");
-
                     data.cryptos.forEach((crypto) => {
                         const tr = document.createElement("tr");
                         // Alternance de couleur des lignes
-                        tr.classList.add('bg-gray-800', 'text-white', 'dark:bg-gray-300', 'dark:text-black');
+                        tr.classList.add('bg-gray-800', 'hover:bg-gray-700', 'text-white', 'dark:bg-gray-300','dark:hover:bg-gray-400', 'dark:text-black');
                         
                         const td1 = document.createElement("td");
-                        td1.classList.add('px-4', 'py-2', 'border', 'border-gray-300', 'dark:border-gray-500');
+                        td1.classList.add('p-3', 'sm:p-4', 'border');
                         td1.textContent = crypto.idCrypto;
                         const td2 = document.createElement("td");
-                        td2.classList.add('px-4', 'py-2', 'border', 'border-gray-300', 'dark:border-gray-500');
+                        td2.classList.add('p-3', 'sm:p-4', 'border');
                         td2.textContent = crypto.intitule;
                         const td3 = document.createElement("td");
-                        td3.classList.add('px-4', 'py-2', 'border', 'border-gray-300', 'dark:border-gray-500');
+                        td3.classList.add('p-3', 'sm:p-4', 'border', 'animate__animated','animate__flipInX');
                         td3.textContent = crypto.currentValeur;
                         
                         tr.appendChild(td1);
@@ -105,8 +91,7 @@
                         tbody.appendChild(tr);
                     });
 
-                    table.appendChild(tbody);
-                    resultDiv.appendChild(table);
+                    tbody.appendChild(table);
                 })
                 .catch(error => {
                     console.error("Erreur lors de la récupération des cryptos :", error);

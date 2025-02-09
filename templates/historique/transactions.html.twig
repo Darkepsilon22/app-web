@@ -4,8 +4,10 @@
 
 {% block body %}
 <main class="flex flex-col items-center text-center mt-24 px-4">
-    <h1 class="text-2xl font-bold text-center mb-6 text-white dark:text-gray-900">Historique des Transactions</h1>
-    <div class="overflow-x-auto w-full max-w-5xl max-h-[60vh] rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold text-center mb-6 text-white dark:text-gray-900 animate__animated animate__fadeInUp">
+        Historique des Transactions
+    </h1>
+    <div class="overflow-x-auto w-full max-w-5xl max-h-[60vh] rounded-lg shadow-lg animate__animated animate__fadeInUp animate__delay-0.5s">
         <table class="w-full border-collapse border border-gray-300 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden text-sm sm:text-base">
             <thead class="bg-gray-900 text-white dark:bg-gray-700">
                 <tr>
@@ -20,7 +22,7 @@
             </thead>
             <tbody class="bg-white text-black dark:bg-gray-200">
                 {% for mouvement in historique %}
-                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-300 {% if mouvement.typeMouvement == 'Vente' %}bg-red-200{% elseif mouvement.typeMouvement == 'Achat' %}bg-green-200{% endif %}">
+                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-300 {% if mouvement.typeMouvement == 'Vente' %}bg-red-200{% elseif mouvement.typeMouvement == 'Achat' %}bg-green-200{% endif %} animate__animated animate__fadeInUp animate__delay-1s">
                         <td class="p-3 sm:p-4 border">{{ mouvement.idMouvementCrypto }}</td>
                         <td class="p-3 sm:p-4 border">{{ mouvement.dateMouvement|date('d/m/Y H:i') }}</td>
                         <td class="p-3 sm:p-4 border">{{ mouvement.prenom }} {{ mouvement.nom }}</td>
@@ -32,7 +34,7 @@
                         </td>
                     </tr>
                 {% else %}
-                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-300">
+                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-300 animate__animated animate__fadeInUp animate__delay-1s">
                         <td class="p-3 sm:p-4 border text-center" colspan="7">Aucun mouvement trouvé.</td>
                     </tr>
                 {% endfor %}

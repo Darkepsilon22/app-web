@@ -8,16 +8,45 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.16.0/dist/sweetalert2.all.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.16.0/dist/sweetalert2.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <style>
-        .fade-in {
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
+        /* Personnaliser la scrollbar */
+        .overflow-x-auto::-webkit-scrollbar {
+            width: 10px; /* Largeur de la scrollbar */
+            height: 10px; /* Hauteur pour la scrollbar horizontale */
         }
 
-        .fade-in.visible {
-            opacity: 1;
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background-color: #3498db; /* Couleur de la barre de défilement */
+            border-radius: 10px; /* Coins arrondis de la barre */
+            border: 3px solid #f3f3f3; /* Bordure autour de la barre de défilement */
+        }
+
+        .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+            background-color: #2980b9; /* Couleur de la barre lors du survol */
+        }
+
+        .overflow-x-auto::-webkit-scrollbar-track {
+            background: #f1f1f1; /* Couleur de fond de la piste de la scrollbar */
+            border-radius: 10px;
+        }
+
+        .overflow-x-auto::-webkit-scrollbar-track:hover {
+            background: #dcdcdc; /* Couleur de fond de la piste lors du survol */
+        }
+
+        /* Animation de zoom pour les boutons au survol */
+        .btn-zoom:hover {
+            transform: scale(1.1);
+            transition: transform 0.3s ease;
+        }
+
+        /* Animation de rotation pour les icônes */
+        .icon-rotate:hover {
+            transform: rotate(360deg);
+            transition: transform 0.5s ease;
         }
     </style>    
 
@@ -58,7 +87,7 @@
         <nav class="hidden md:flex space-x-4">
             <!-- Dropdown pour Cours des cryptos -->
             <div class="relative">
-                <button id="dropdown-button" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black flex items-center">
+                <button id="dropdown-button" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black flex items-center btn-zoom">
                     Cours des cryptos
                     <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -70,7 +99,7 @@
                     <a href="{{ path('page_analyse_crypto') }}" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Analyse</a>
                 </div>
             </div>
-            <a href="{{ path('transactions_users') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Achats et ventes</a>
+            <a href="{{ path('transactions_users') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black btn-zoom">Achats et ventes</a>
         </nav>
     </div>
 
@@ -78,7 +107,7 @@
     <div id="mobile-menu" class="hidden absolute top-16 left-0 w-full bg-blue-900 dark:bg-blue-100 shadow-md md:hidden">
         <nav class="flex flex-col space-y-2 p-4">
             <div class="relative">
-                <button id="dropdown-button-mobile" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black flex items-center">
+                <button id="dropdown-button-mobile" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black flex items-center btn-zoom">
                     Cours des cryptos
                     <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -90,21 +119,21 @@
                     <a href="#" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Analyse</a>
                 </div>
             </div>
-            <a href="{{ path('transactions_users') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Achats et ventes</a>
+            <a href="{{ path('transactions_users') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black btn-zoom">Achats et ventes</a>
         </nav>
     </div>
 
     <!-- Boutons de droite -->
     <div class="flex items-center space-x-4">
-    <!-- Bouton menu pour mobile -->
+        <!-- Bouton menu pour mobile -->
         <button id="menu-btn" class="md:hidden text-gray-400 dark:text-gray-600 focus:outline-none">
-            <i class="fas fa-bars text-xl"></i>
+            <i class="fas fa-bars text-xl icon-rotate"></i>
         </button>
-        <a href="{{ path('page_login') }}" class="bg-gray-800 text-white px-4 py-2 rounded dark:bg-gray-300 dark:text-black">Connexion</a>
-        <a href="{{ path('page_register') }}" class="bg-blue-700 text-white px-4 py-2 rounded dark:bg-blue-500 dark:text-black">Inscription</a>
+        <a href="{{ path('page_login') }}" class="bg-gray-800 text-white px-4 py-2 rounded dark:bg-gray-300 dark:text-black btn-zoom">Connexion</a>
+        <a href="{{ path('page_register') }}" class="bg-blue-700 text-white px-4 py-2 rounded dark:bg-blue-500 dark:text-black btn-zoom">Inscription</a>
         <button onclick="toggleTheme()" class="text-gray-400 dark:text-gray-600">
-            <i id="moonIcon" class="fas fa-moon"></i>
-            <i id="sunIcon" class="fas fa-sun hidden"></i>
+            <i id="moonIcon" class="fas fa-moon icon-rotate"></i>
+            <i id="sunIcon" class="fas fa-sun hidden icon-rotate"></i>
         </button>
     </div>
 </header>
@@ -140,10 +169,10 @@
             </p>
         </div>
         <div class="flex space-x-4">
-            <a href="#"><i class="fab fa-facebook-f text-2xl"></i></a>
-            <a href="#"><i class="fab fa-twitter text-2xl"></i></a>
-            <a href="#"><i class="fab fa-instagram text-2xl"></i></a>
-            <a href="#"><i class="fab fa-linkedin-in text-2xl"></i></a>
+            <a href="#" class="text-2xl hover:text-blue-500 transition-transform"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-2xl hover:text-blue-400 transition-transform"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-2xl hover:text-pink-500 transition-transform"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-2xl hover:text-blue-700 transition-transform"><i class="fab fa-linkedin-in"></i></a>
         </div>
     </div>
 </footer>

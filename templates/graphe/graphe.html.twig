@@ -27,17 +27,19 @@
         width: 100%;
     }
 </style>
+
 <main class="flex flex-wrap justify-center items-start px-4 flex-grow mt-20 gap-8 container mx-auto mb-10">
-    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-3xl">
+    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-3xl animate__animated animate__fadeInUp">
         <div>
             <label for="typeAnalyse" class="block text-lg font-medium mb-2 text-white dark:text-black">Crypto :</label>
             <select id="typeAnalyse" class="w-full p-2 border border-gray-300 rounded-md bg-gray-800 text-white dark:bg-gray-300 dark:text-black dark:border-gray-600">
             </select>
             <div id="cryptoLoader" class="loader"></div>
         </div>
-        <button id="valider" class="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition duration-200 mt-6 dark:bg-blue-700 dark:hover:bg-blue-800">Voire</button>
+        <button id="valider" class="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition duration-200 mt-6 dark:bg-blue-700 dark:hover:bg-blue-800">Voir</button>
     </div>
-    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-10xl">
+    
+    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-10xl animate__animated animate__fadeInUp animate__delay-0.5s">
         <h2 id="cryptoTitle" class="text-2xl font-semibold text-center text-white dark:text-black">Graphe</h2>
         <div id="cryptoChartContainer">
             <canvas id="cryptoChart"></canvas>
@@ -45,16 +47,17 @@
         </div>
     </div>
 
-{% if error is defined %}
-    <script>
-        Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "{{ error|raw }}"
-        });
-    </script>
-{% endif %}
+    {% if error is defined %}
+        <script>
+            Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "{{ error|raw }}"
+            });
+        </script>
+    {% endif %}
 </main>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const cryptoLoader = document.getElementById("cryptoLoader");
@@ -145,7 +148,6 @@
             if (selectedCryptoId) {
                 fetchCryptoData(selectedCryptoId, selectedCryptoName);
                 setInterval(() => fetchCryptoData(selectedCryptoId, selectedCryptoName), 10000);
-
             }
         });
     });
