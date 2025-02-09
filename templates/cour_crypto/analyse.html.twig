@@ -149,7 +149,11 @@
             });
 
             if (selectedCryptos.length === 0 || !dateMin || !dateMax) {
-                alert("Veuillez remplir tous les champs.");
+                Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Veuillez remplir tous les champs."
+                });
                 return;
             }
 
