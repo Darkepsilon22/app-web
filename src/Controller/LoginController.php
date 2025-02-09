@@ -19,12 +19,6 @@ class LoginController extends AbstractController
         $this->loginService = $loginService;
     }
 
-    #[Route('/', name: 'app_login')]
-    public function login(): Response
-    {
-        return $this->render('login.html.twig');  
-    }
-
     #[Route('/login/send', name: 'app_login_send', methods: ['POST'])]
 public function sendPin(Request $request): Response
 {
@@ -34,18 +28,17 @@ public function sendPin(Request $request): Response
     try {
         $response = $this->loginService->sendPin($email, $password);
 
-        $successMessage = "Connexion réussie ! Un code PIN a été envoyé à votre email.";
+        $successMessage = "Un code PIN a été envoyé à votre email.";
         return $this->render('check_pin.html.twig', [
             'email' => $email,
             'password' => $password,
-            'response' => $response,
             'success' => $successMessage,
         ]);
-    } catch (\Exception $e) {
-        $errorMessage = "Email ou mot de passe incorrect.";
+    } catch (\Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface $e) {
+        $message = $e->getResponse()->getContent(false);
         return $this->render('login.html.twig', [
             'email' => $email,
-            'error' => $errorMessage,
+            'error' => $message,
         ]);
     }
 }
@@ -61,12 +54,12 @@ public function verifyPin(Request $request): Response
         $response = $this->loginService->verifyPin($email, $password, $pin);
 
         return $this->render('accueil.html.twig');
-    } catch (\Exception $e) {
-        $errorMessage = "PIN invalide ou délai de 90 secondes dépassé.";
+    } catch (\Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface $e) {
+        $message = $e->getResponse()->getContent(false);
         return $this->render('check_pin.html.twig', [
             'email' => $email,
             'password' => $password,
-            'error' => $errorMessage,
+            'error' => $message,
         ]);
     }
 }
@@ -78,40 +71,23 @@ public function resetSend(Request $request): Response
         $email = $request->request->get('email');
         $password = $request->request->get('password');
 
-        if (!$email || !$password) {
-            $this->addFlash('error', 'Veuillez entrer votre email et mot de passe.');
-            return $this->redirectToRoute('app_reset_send');
-        }
-
-        $data = [
-            'email' => $email,
-            'password' => $password,
-        ];
-
-        $client = HttpClient::create();
         try {
-            $response = $client->request('POST', 'http://localhost:8080/api/user/resettentative/send', [
-                'json' => $data
+            $response = $this->loginService->resetSend($email, $password);
+    
+            $message = 'Un email de réinitialisation a été envoyé.';
+            return $this->render('login.html.twig', [
+                'success' => $message,
             ]);
-
-            if ($response->getStatusCode() === 200) {
-                $this->addFlash('success', 'Le lien de réinitialisation a été envoyé.');
-            } else {
-                $this->addFlash('error', 'Échec de l\'envoi du lien de réinitialisation.');
-            }
-        } catch (\Exception $e) {
-            $this->addFlash('error', 'Une erreur est survenue : ' . $e->getMessage());
+        } catch (\Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface $e) {
+            $message = $e->getResponse()->getContent(false);
+            return $this->render('reset_password.html.twig', [
+                'error' => $message,
+            ]);
         }
-
-        return $this->redirectToRoute('app_reset_send');
     }
 
     return $this->render('reset_password.html.twig');
 }
-
-
-
-
 }
 
 

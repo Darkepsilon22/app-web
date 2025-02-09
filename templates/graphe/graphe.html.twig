@@ -1,137 +1,153 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historique des prix de la cryptomonnaie</title>
-    <script src={{ asset('js/chart.js') }}></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
+{% extends 'base.html.twig' %}
 
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-
-        .container {
-            max-width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        #cryptoChart {
-            width: 100% !important;
-            height: 250px; 
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Détails de la Cryptomonnaie : {{ crypto.intitule }}</h1>
-        <canvas id="cryptoChart"></canvas>
-    </div>
-
-    <script>
-         const historiquePrix = {{ historique_prix | json_encode | raw }};
-
-    const labels = historiquePrix.map(prix => prix.date);
-    const valeurs = historiquePrix.map(prix => parseFloat(prix.valeur_dollar));
-
-    const ctx = document.getElementById('cryptoChart').getContext('2d');
-    const cryptoChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Historique des prix (USD)',
-                data: valeurs,
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0)',
-                fill: false,  // Suppression du remplissage
-                tension: 0,  // Ligne droite sans lissage
-                borderWidth: 2,
-                pointRadius: 3,
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Historique des prix de la cryptomonnaie',
-                    font: {
-                        size: 16,
-                        weight: 'bold'
-                    },
-                    color: '#333'
-                },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0,0,0,0.7)',
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
-                }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Date',
-                        color: '#333'
-                    },
-                    ticks: {
-                        maxRotation: 45,
-                        minRotation: 45,
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Prix (USD)',
-                        color: '#333'
-                    },
-                    beginAtZero: false,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value.toFixed(2);
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    function updateChart() {
-        fetch(`/cryptocurrency/${cryptoId}/price-updates`)
-            .then(response => response.json())
-            .then(data => {
-                const newLabels = data.map(prix => prix.date);
-                const newValues = data.map(prix => parseFloat(prix.valeur_dollar));
-
-                cryptoChart.data.labels = newLabels;
-                cryptoChart.data.datasets[0].data = newValues;
-                
-                cryptoChart.update();
-            })
-            .catch(error => console.error('Erreur lors de la récupération des données :', error));
+{% block title %}Graphique{% endblock %}
+{% block body %}
+<script src={{ asset('js/chart.js') }}></script>
+<style>
+    /* Spinner de chargement */
+    .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 2s linear infinite;
+        display: none; /* Cacher le loader par défaut */
+        margin: 20px auto;
     }
 
-    setInterval(updateChart, 10000);
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 
-        setInterval(() => {
-            location.reload();
-        }, 10000);
+    #cryptoChartContainer {
+        position: relative;
+        height: 400px; /* Ajuste la hauteur fixe */
+        width: 100%;
+    }
+</style>
+<main class="flex flex-wrap justify-center items-start px-4 flex-grow mt-20 gap-8 container mx-auto mb-10">
+    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-3xl">
+        <div>
+            <label for="typeAnalyse" class="block text-lg font-medium mb-2 text-white dark:text-black">Crypto :</label>
+            <select id="typeAnalyse" class="w-full p-2 border border-gray-300 rounded-md bg-gray-800 text-white dark:bg-gray-300 dark:text-black dark:border-gray-600">
+            </select>
+            <div id="cryptoLoader" class="loader"></div>
+        </div>
+        <button id="valider" class="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition duration-200 mt-6 dark:bg-blue-700 dark:hover:bg-blue-800">Voire</button>
+    </div>
+    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-10xl">
+        <h2 id="cryptoTitle" class="text-2xl font-semibold text-center text-white dark:text-black">Graphe</h2>
+        <div id="cryptoChartContainer">
+            <canvas id="cryptoChart"></canvas>
+            <div id="graphLoader" class="loader"></div>
+        </div>
+    </div>
+
+{% if error is defined %}
+    <script>
+        Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "{{ error|raw }}"
+        });
     </script>
+{% endif %}
+</main>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cryptoLoader = document.getElementById("cryptoLoader");
+        const cryptoSelect = document.getElementById("typeAnalyse");
+        const validerBtn = document.getElementById("valider");
+        const cryptoTitle = document.getElementById("cryptoTitle");
+        let cryptoChart;
 
-</body>
-</html>
+        // Affichage du loader pendant la récupération des cryptos
+        cryptoLoader.style.display = 'block'; 
+        fetch('/cryptos')
+            .then(response => response.json())
+            .then(data => {
+                cryptoLoader.style.display = 'none';  // Cacher le loader une fois les cryptos récupérés
+                
+                if (!data.cryptos || data.cryptos.length === 0) {
+                    const option  = document.createElement('option');
+                    option.textContent = 'Pas de cryptos';
+                    option.disabled = true;
+                    cryptoSelect.appendChild(option);
+                    return;
+                }
+
+                data.cryptos.forEach((crypto) => {
+                    const option  = document.createElement('option');
+                    option.value = crypto.idCrypto;
+                    option.textContent = crypto.intitule;
+                    cryptoSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error("Erreur lors de la récupération des cryptos :", error);
+                cryptoLoader.style.display = 'none';  // Cacher le loader en cas d'erreur
+            });
+
+        function fetchCryptoData(cryptoId, cryptoName) {
+            fetch(`/crypto/graph/${cryptoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (cryptoChart) {
+                        cryptoChart.destroy();
+                    }
+                    cryptoTitle.textContent = `Graphe - ${cryptoName}`;
+                    const ctx = document.getElementById("cryptoChart").getContext("2d");
+                    const graphLoader = document.getElementById("graphLoader");
+                    graphLoader.style.display = 'none'; 
+                    cryptoChart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: data.historique_prix.map(entry => entry.date),
+                            datasets: [{
+                                label: "Prix en USD",
+                                data: data.historique_prix.map(entry => entry.valeur_dollar),
+                                borderColor: "#3498db",
+                                backgroundColor: "rgba(52, 152, 219, 0.2)",
+                                fill: false,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: "Date"
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: "Prix en USD"
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error("Erreur lors de la récupération de l'historique des prix :", error));
+        }
+
+        validerBtn.addEventListener("click", function () {
+            const selectedCryptoId = cryptoSelect.value;
+            const selectedCryptoName = cryptoSelect.options[cryptoSelect.selectedIndex].text;
+            const graphLoader = document.getElementById("graphLoader");
+                graphLoader.style.display = 'block'; 
+            if (selectedCryptoId) {
+                fetchCryptoData(selectedCryptoId, selectedCryptoName);
+                setInterval(() => fetchCryptoData(selectedCryptoId, selectedCryptoName), 10000);
+
+            }
+        });
+    });
+</script>
+{% endblock %}

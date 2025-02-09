@@ -1,75 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Portefeuille{% endblock %}
+{% block title %}Acceuil{% endblock %}
 
 {% block body %}
-<div class="container">
-        <!-- Navbar à gauche -->
-        <nav class="navbar">
-            <h2>Menu</h2>
-            <ul>
-                <li><a href="#">Tableau de bord</a></li>
-                <li><a href="#">Transactions</a></li>
-                <li><a href="#">Paramètres</a></li>
-            </ul>
-        </nav>
-    
-        <!-- Contenu principal centré -->
-        <div class="content">
-            <!-- Solde en haut à droite -->
-            <div class="balance">
-                Solde : <span id="balance">$0.00</span>
-            </div>
-    
-            <!-- Sections Dépôt et Retrait -->
-            <div class="actions">
-                <!-- Bloc Dépôt -->
-                <div class="card">
-                    <h2>Dépôt</h2>
-                    <input type="number" id="deposit-amount" placeholder="Montant ($)">
-                    <input type="password" id="deposit-password" placeholder="Mot de passe">
-                    <button onclick="makeDeposit()">OK</button>
-                </div>
-    
-                <!-- Bloc Retrait -->
-                <div class="card">
-                    <h2>Retrait</h2>
-                    <input type="number" id="withdraw-amount" placeholder="Montant ($)">
-                    <input type="password" id="withdraw-password" placeholder="Mot de passe">
-                    <button onclick="makeWithdraw()">OK</button>
-                </div>
-            </div>
-        </div>
+
+<main class="flex flex-col items-center text-center justify-center h-[80vh] px-4 flex-grow">
+    <h1 class="text-6xl font-bold text-blue-500 dark:text-blue-700">Bienvenue !</h1>
+    <h2 class="text-4xl font-bold mt-4">CryptoMada votre pourvoyeuse</h2>
+    <div class="flex mt-8 space-x-4">
+        <a href="{{ path('page_login') }}"  class="bg-blue-700 text-white px-4 py-2 rounded dark:bg-blue-500 dark:text-black">Se connecter</a>
     </div>
-    
-    <!-- Script pour gérer les dépôts/retraits -->
-    <script>
-        let balance = 0;
-    
-        function makeDeposit() {
-            const amount = parseFloat(document.getElementById('deposit-amount').value);
-            if (amount > 0) {
-                balance += amount;
-                updateBalance();
-                alert('Dépôt réussi !');
-            } else {
-                alert('Veuillez entrer un montant valide.');
-            }
-        }
-    
-        function makeWithdraw() {
-            const amount = parseFloat(document.getElementById('withdraw-amount').value);
-            if (amount > 0 && amount <= balance) {
-                balance -= amount;
-                updateBalance();
-                alert('Retrait réussi !');
-            } else {
-                alert('Montant invalide ou solde insuffisant.');
-            }
-        }
-    
-        function updateBalance() {
-            document.getElementById('balance').textContent = `$${balance.toFixed(2)}`;
-        }
-    </script>
+</main>
 {% endblock %}

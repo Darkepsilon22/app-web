@@ -1,60 +1,241 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyse</title>
-</head>
-<body>
-    <h2>Analyse des Cryptos</h2>
+{% extends 'base.html.twig' %}
 
-    <form method="post">
-        <label for="typeAnalyse">Type d'Analyse :</label>
-        <select name="typeAnalyse" id="typeAnalyse" required>
-            <option value="min">Minimum</option>
-            <option value="max">Maximum</option>
-            <option value="moyenne">Moyenne</option>
-            <option value="ecart-type">Écart-Type</option>
-            <option value="1-quartile">1er Quartile</option>
-        </select>
+{% block title %}Transactions{% endblock %}
+{% block body %}
+<style>
+    /* Spinner de chargement */
+    .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 2s linear infinite;
+        display: none; /* Cacher le loader par défaut */
+        margin: 20px auto;
+    }
 
-        <br>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 
-        <label>Crypto :</label>
-        <input type="checkbox" name="crypto[]" value="Tous" checked> Tous
-        {% for crypto in cryptos %}
-            <input type="checkbox" name="crypto[]" value="{{ crypto.idCrypto }}"> {{ crypto.intitule }}
-        {% endfor %}
+</style>
+<main class="flex flex-wrap justify-center items-start px-4 flex-grow mt-20 gap-8 container mx-auto mb-10">
+    <!-- Section Analyse des Cryptos -->
+    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-3xl">
+        <h1 class="text-3xl font-semibold text-center mb-6 text-white dark:text-black">Analyse des Cryptos</h1>
 
-        <br>
+        <div class="grid grid-cols-1 gap-6">
+            <!-- Type d'Analyse -->
+            <div>
+                <label for="typeAnalyse" class="block text-lg font-medium mb-2 text-white dark:text-black">Type d'Analyse :</label>
+                <select id="typeAnalyse" class="w-full p-2 border border-gray-300 rounded-md bg-gray-800 text-white dark:bg-gray-300 dark:text-black dark:border-gray-600">
+                    <option value="1-quartile">1er Quartile</option>
+                    <option value="max">Max</option>
+                    <option value="min">Min</option>
+                    <option value="moyenne">Moyenne</option>
+                    <option value="ecart-type">Écart-Type</option>
+                </select>
+            </div>
 
-        <label for="dateMin">Date et Heure Min :</label>
-        <input type="datetime-local" name="dateMin" required value="2025-02-07T09:30:00" >
+            <!-- Sélection des Cryptos -->
+            <div>
+                <fieldset class="border p-4 rounded-md border-gray-300 dark:border-gray-600">
+                    <legend class="text-xl font-medium mb-4 text-white dark:text-black">Cryptos :</legend>
+                    <div class="flex items-center mb-4">
+                        <input type="checkbox" id="allCryptos" class="mr-2">
+                        <label for="allCryptos" class="text-lg text-white dark:text-black">Tous</label>
+                    </div>
+                    <div id="cryptoList" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+                    <div id="cryptoLoader" class="loader"></div>
+                </fieldset>
+            </div>
+        </div>
 
-        <label for="dateMax">Date et Heure Max :</label>
-        <input type="datetime-local" name="dateMax" required value="2025-02-07T09:31:00">
+        <!-- Sélection des dates -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div>
+                <label for="dateMin" class="block text-lg font-medium mb-2 text-white dark:text-black">Date et Heure Min :</label>
+                <input type="datetime-local" id="dateMin" value="2025-02-07T09:30:00" class="w-full p-2 border border-gray-300 rounded-md bg-gray-800 text-white dark:bg-gray-300 dark:text-black dark:border-gray-600">
+            </div>
+            <div>
+                <label for="dateMax" class="block text-lg font-medium mb-2 text-white dark:text-black">Date et Heure Max :</label>
+                <input type="datetime-local" id="dateMax" value="2025-02-07T09:31:00" class="w-full p-2 border border-gray-300 rounded-md bg-gray-800 text-white dark:bg-gray-300 dark:text-black dark:border-gray-600">
+            </div>
+        </div>
 
-        <br><br>
+        <!-- Bouton Valider -->
+        <button id="valider" class="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition duration-200 mt-6 dark:bg-blue-700 dark:hover:bg-blue-800">Valider</button>
+    </div>
 
-        <button type="submit">Valider</button>
-    </form>
+    <!-- Section Résultats -->
+    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-3xl">
+        <h2 class="text-2xl font-semibold text-white dark:text-black">Résultats de l'Analyse</h2>
+        <div id="resultLoader" class="loader"></div>
+        <div id="resultats" class="mt-4"></div>
+    </div>
+</main>
 
-    {% if resultats is not null %}
-        <h3>Résultats :</h3>
-        <table border="1">
-            <tr>
-                <th>id Crypto</th>
-                <th>Crypto</th>
-                <th>Valeur</th>
-            </tr>
-            {% for crypto, data in resultats %}
-                <tr>
-                    <td>{{ data.crypto_id }}</td>
-                    <td>{{ data.crypto_nom }}</td>
-                    <td>{{ data.valeur }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
-</body>
-</html>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cryptoLoader = document.getElementById("cryptoLoader");
+        const resultLoader = document.getElementById("resultLoader");
+
+        // Affichage du loader pendant la récupération des cryptos
+        cryptoLoader.style.display = 'block'; 
+        fetch('/cryptos')
+            .then(response => response.json())
+        .then(data => {
+            cryptoLoader.style.display = 'none';  // Cacher le loader une fois les cryptos récupérés
+            const cryptoList = document.getElementById("cryptoList");
+
+            if (!data.cryptos || data.cryptos.length === 0) {
+                cryptoList.innerHTML = "<p>Aucune crypto disponible.</p>";
+                return;
+            }
+
+            // Ajoutez une classe flexbox responsive à cryptoList
+            cryptoList.classList.add('grid', 'grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4', 'gap-4', 'p-4');
+
+            data.cryptos.forEach((crypto, index) => {
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.id = "crypto" + crypto.idCrypto;
+                checkbox.name = "crypto[]";
+                checkbox.value = crypto.idCrypto;
+                checkbox.classList.add('hidden', 'peer'); // Cache la checkbox et prépare pour le style peer
+
+                const label = document.createElement("label");
+                label.htmlFor = checkbox.id;
+                label.textContent = crypto.intitule;
+                label.classList.add(
+                    'inline-flex', 'items-center', 'justify-between', 'w-full', 'p-5',
+                    'border-2', 'border-gray-200',
+                    'rounded-lg', 'cursor-pointer', 'peer-checked:border-blue-600'
+                );
+
+                const div = document.createElement("div");
+                div.classList.add('flex', 'items-center');
+                div.appendChild(checkbox);
+                div.appendChild(label);
+
+                cryptoList.appendChild(div);
+            });
+
+            document.getElementById("allCryptos").addEventListener("change", function () {
+                document.querySelectorAll("#cryptoList input[type='checkbox']").forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        })
+
+            .catch(error => {
+                console.error("Erreur lors de la récupération des cryptos :", error);
+                cryptoLoader.style.display = 'none';  // Cacher le loader en cas d'erreur
+            });
+
+        // Envoi des données et récupération des résultats
+        document.getElementById("valider").addEventListener("click", function () {
+            const typeAnalyse = document.getElementById("typeAnalyse").value;
+            const dateMin = document.getElementById("dateMin").value;
+            const dateMax = document.getElementById("dateMax").value;
+            const selectedCryptos = [];
+
+            document.querySelectorAll("#cryptoList input[type='checkbox']:checked").forEach(checkbox => {
+                selectedCryptos.push(checkbox.value);
+            });
+
+            if (selectedCryptos.length === 0 || !dateMin || !dateMax) {
+                alert("Veuillez remplir tous les champs.");
+                return;
+            }
+
+            const requestData = {
+                typeAnalyse: typeAnalyse,
+                crypto: selectedCryptos,
+                dateMin: dateMin,
+                dateMax: dateMax
+            };
+            
+            const resultDiv = document.getElementById("resultats");
+            resultDiv.innerHTML = ""; // Effacer les anciens résultats
+            resultLoader.style.display = 'block';  // Afficher le loader des résultats
+
+            fetch('/courcrypto/analyse', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultLoader.style.display = 'none';  // Cacher le loader une fois l'analyse terminée
+
+                if (data.error) {
+                    resultDiv.innerHTML = "<p class='text-red-500'>" + data.error + "</p>";
+                    return;
+                }
+
+                // Création du tableau
+                const table = document.createElement("table");
+                table.classList.add('w-full', 'border-collapse', 'border', 'border-gray-300', 'dark:border-gray-500');
+
+                // Création de l'en-tête du tableau
+                const thead = document.createElement("thead");
+                const tr = document.createElement("tr");
+                tr.classList.add('bg-gray-800', 'text-white', 'dark:bg-gray-300', 'dark:text-black');
+                const th1 = document.createElement("th");
+                th1.classList.add('border', 'border-gray-300', 'dark:border-gray-500', 'p-2');
+                th1.textContent = "ID Crypto";
+                const th2 = document.createElement("th");
+                th2.classList.add('border', 'border-gray-300', 'dark:border-gray-500', 'p-2');
+                th2.textContent = "Nom Crypto";
+                const th3 = document.createElement("th");
+                th3.classList.add('border', 'border-gray-300', 'dark:border-gray-500', 'p-2');
+                th3.textContent = "Valeur (USD)";
+
+                tr.appendChild(th1);
+                tr.appendChild(th2);
+                tr.appendChild(th3);
+                thead.appendChild(tr);
+                table.appendChild(thead);
+
+                // Création du corps du tableau avec les données
+                const tbody = document.createElement("tbody");
+                Object.values(data.resultats).forEach((res, index) => {
+                    const tr = document.createElement("tr");
+                    // Alternance de couleur des lignes
+                    tr.classList.add('bg-gray-800', 'text-white', 'dark:bg-gray-300', 'dark:text-black');
+                    
+                    const td1 = document.createElement("td");
+                    td1.classList.add('px-4', 'py-2', 'border', 'border-gray-300', 'dark:border-gray-500');
+                    td1.textContent = res.crypto_id;
+                    const td2 = document.createElement("td");
+                    td2.classList.add('px-4', 'py-2', 'border', 'border-gray-300', 'dark:border-gray-500');
+                    td2.textContent = res.crypto_nom;
+                    const td3 = document.createElement("td");
+                    td3.classList.add('px-4', 'py-2', 'border', 'border-gray-300', 'dark:border-gray-500');
+                    td3.textContent = res.valeur;
+                    
+                    tr.appendChild(td1);
+                    tr.appendChild(td2);
+                    tr.appendChild(td3);
+                    tbody.appendChild(tr);
+                });
+
+                table.appendChild(tbody);
+                resultDiv.appendChild(table);
+
+            })
+            .catch(error => {
+                console.error("Erreur lors de l'analyse :", error);
+                resultLoader.style.display = 'none';  // Cacher le loader en cas d'erreur
+            });
+        });
+    });
+</script>
+{% endblock %}

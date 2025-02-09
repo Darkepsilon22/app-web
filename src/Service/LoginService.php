@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 
 class LoginService
 {
@@ -15,36 +15,41 @@ class LoginService
         $this->client = $client;
     }
 
-    public function sendPin(string $email,string $password): string
+    public function sendPin(string $email, string $password): string
     {
-        $response = $this->client->request('POST', $this->apiUrl . 'send', [
-            'json' => ['email' => $email,'password' => $password,],
-        ]);
+        try {
+            $response = $this->client->request('POST', $this->apiUrl . 'send', [
+                'json' => ['email' => $email, 'password' => $password],
+            ]);
 
-        return $response->getContent();
+            return $response->getContent();
+        } catch (ClientExceptionInterface $e) {
+            throw $e;
+        }
     }
 
     public function verifyPin(string $email,string $password, int $pin): string
     {
-        $response = $this->client->request('POST', $this->apiUrl . 'verify', [
-            'query' => ['pin' => $pin],
-            'json' => ['email' => $email,'password' => $password],
-        ]);
-
-
-        return $response->getContent();
+        try {
+            $response = $this->client->request('POST', $this->apiUrl . 'verify', [
+                'query' => ['pin' => $pin],
+                'json' => ['email' => $email,'password' => $password],
+            ]);
+            return $response->getContent();
+        } catch (ClientExceptionInterface $e) {
+            throw $e;
+        }
     }
     public function resetSend(string $email,string $password): string
     {
-        $response = $this->client->request('POST', $this->apiUrl . 'verify', [
-            'json' => ['email' => $email,'password' => $password],
-        ]);
-
-
-        return $response->getContent();
-    }
-
-    
-    
+        try {
+            $response = $this->client->request('POST', 'http://localhost:8080/api/user/resettentative/send', [
+                'json' => ['email' => $email,'password' => $password],
+            ]);
+            return $response->getContent();
+        } catch (ClientExceptionInterface $e) {
+            throw $e;
+        }
+    }   
 }
 ?>

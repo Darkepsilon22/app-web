@@ -103,47 +103,23 @@ public function vendreCrypto(Request $request): JsonResponse
     return new JsonResponse($result, isset($result['error']) ? 400 : 200);
 }
 
-    
-
-    #[Route('/cryptocurrency/{id}', name: 'crypto_price_graph', methods: ['GET'])]
-    public function getPriceUpdates(int $id): Response
-    {
-        $crypto = $this->entityManager->getRepository(Crypto::class)->find($id);
-    
-        if (!$crypto) {
-            throw $this->createNotFoundException('Cryptomonnaie non trouvée');
-        }
-    
-        $historiquePrix = $this->entityManager->getRepository(CourCrypto::class)
-            ->findBy(['crypto' => $crypto], ['instant' => 'ASC']);
-    
-        $prixHistorique = [];
-        $previousTime = null;
-    
-        foreach ($historiquePrix as $prix) {
-            $currentTime = $prix->getInstant();
-            
-            if ($previousTime === null || $currentTime->getTimestamp() - $previousTime->getTimestamp() >= 10) {
-                $prixHistorique[] = [
-                    'date' => $currentTime->format('Y-m-d H:i:s'),
-                    'valeur_dollar' => $prix->getValeurDollar()
-                ];
-                $previousTime = $currentTime;
-            }
-        }
-    
-        return $this->render('graphe/graphe.html.twig', [
-            'crypto' => $crypto,
-            'historique_prix' => $prixHistorique, 
-        ]);
-    }
-
-    #[Route('/historique/{userId}', name: 'crypto_price_updates', methods: ['GET'])]
+    #[Route('/transactions/{userId}', name: 'transactions_user', methods: ['GET'])]
     public function index(int $userId): Response
     {
         $historique = $this->mouvementCryptoRepository->getHistoriqueByUser($userId);
 
         return $this->render('historique/historique.html.twig', [
+            'historique' => $historique,
+        ]);
+    }
+
+    #[Route('/transactions', name: 'transactions_users', methods: ['GET'])]
+    public function historiques(): Response
+    {
+        $historique = $this->mouvementCryptoRepository->getHistorique();
+
+        
+        return $this->render('historique/transactions.html.twig', [
             'historique' => $historique,
         ]);
     }

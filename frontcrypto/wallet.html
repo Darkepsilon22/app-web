@@ -1,0 +1,216 @@
+<html lang="fr">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Cryptomada - Mon Solde
+  </title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <script>
+   tailwind.config = {
+            darkMode: 'class' // Active le mode sombre basé sur 'class'
+        };
+  </script>
+  <!-- Font Awesome & Chart.js -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+  </script>
+  <style>
+   .fade-in {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+        }
+
+        .transition-all {
+            transition: all 0.3s ease-in-out;
+        }
+  </style>
+  <script>
+   function toggleTheme() {
+            const html = document.documentElement; // Modifier <html> au lieu de <body>
+            const isDark = html.classList.toggle('dark'); // Ajoute ou enlève 'dark'
+            localStorage.setItem('theme', isDark ? 'dark' : 'light'); // Sauvegarde l'état
+            updateIcons();
+        }
+
+        function updateIcons() {
+            document.getElementById('moonIcon').classList.toggle('hidden', document.documentElement.classList.contains('dark'));
+            document.getElementById('sunIcon').classList.toggle('hidden', !document.documentElement.classList.contains('dark'));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+            updateIcons();
+        });
+
+        function switchForm(type) {
+            const amountLabel = document.getElementById('amountLabel');
+            const amountInput = document.getElementById('amount');
+            const actionButton = document.getElementById('actionButton');
+            const depositButton = document.getElementById('depositButton');
+            const withdrawButton = document.getElementById('withdrawButton');
+            const formContainer = document.getElementById('formContainer');
+
+            formContainer.classList.add('transition-all');
+            formContainer.classList.remove('transition-all');
+
+            if (type === 'deposit') {
+                amountLabel.textContent = 'Entrer valeur (USD)';
+                amountInput.placeholder = 'Entrer valeur';
+                actionButton.textContent = 'Déposer Fonds';
+                depositButton.classList.add('bg-blue-500');
+                depositButton.classList.remove('bg-gray-700');
+                withdrawButton.classList.add('bg-gray-700');
+                withdrawButton.classList.remove('bg-blue-500');
+            } else {
+                amountLabel.textContent = 'Entrer valeur (USD)';
+                amountInput.placeholder = 'Entrer valeur';
+                actionButton.textContent = 'Retirer Fonds';
+                withdrawButton.classList.add('bg-blue-500');
+                withdrawButton.classList.remove('bg-gray-700');
+                depositButton.classList.add('bg-gray-700');
+                depositButton.classList.remove('bg-blue-500');
+            }
+        }
+  </script>
+ </head>
+ <body class="bg-blue-900 text-white dark:bg-blue-100 dark:text-black">
+  <header class="flex justify-between items-center p-4 bg-blue-900 dark:bg-blue-100 w-full fixed top-0 z-10">
+   <div class="flex items-center space-x-4">
+    <img alt="Cryptomada logo" class="h-10" src="https://storage.googleapis.com/a1aa/image/9pxh7S4ZCYtJDDE77zZGTK577a5YUe_5KFaUEfM9gQI.jpg"/>
+    <nav class="hidden md:flex space-x-4">
+     <a class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black" href="#">
+      Acheter des cryptos
+     </a>
+     <a class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black" href="#">
+      Wallet
+     </a>
+     <a class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black" href="#">
+      Earn
+     </a>
+     <a class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black" href="#">
+      About Us
+     </a>
+    </nav>
+   </div>
+   <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-2">
+     <img alt="User profile picture" class="h-10 w-10 rounded-full" height="40" src="https://storage.googleapis.com/a1aa/image/NysRdCK39w9dcghrIVvzZTahc83g8dWQatnBjBqwejY.jpg" width="40"/>
+     <span class="text-gray-400 dark:text-gray-600">
+      John Doe
+     </span>
+    </div>
+    <i class="fas fa-globe text-green-400 dark:text-green-600">
+    </i>
+    <button class="text-gray-400 dark:text-gray-600" onclick="toggleTheme()">
+     <i class="fas fa-moon" id="moonIcon">
+     </i>
+     <i class="fas fa-sun hidden" id="sunIcon">
+     </i>
+    </button>
+   </div>
+  </header>
+  <main class="flex flex-col items-center text-center mt-24">
+   <div class="max-w-4xl mx-auto p-4">
+    <div class="bg-gray-800 p-4 rounded-lg text-center dark:bg-gray-300 transition-all">
+        <h1 class="text-3xl text-blue-400 dark:text-blue-600">$96000.00</h1>
+        <p class="text-gray-400 dark:text-gray-700">Votre Solde</p>
+    </div>
+    <div id="formContainer" class="bg-gray-800 p-4 mt-4 rounded-lg dark:bg-gray-300 transition-all">
+        <div class="flex justify-center mb-4">
+            <button id="depositButton" class="bg-blue-500 text-white py-2 px-4 rounded-l-lg transition duration-300 ease-in-out transform hover:scale-105" onclick="switchForm('deposit')">
+                <i class="fas fa-money-bill-wave mr-2"></i> Dépôt
+            </button>
+            <button id="withdrawButton" class="bg-gray-700 text-white py-2 px-4 rounded-r-lg transition duration-300 ease-in-out transform hover:scale-105" onclick="switchForm('withdraw')">
+                <i class="fas fa-hand-holding-usd mr-2"></i> Retrait
+            </button>
+        </div>
+        <div class="mb-4">
+            <label id="amountLabel" for="amount" class="block text-gray-400 dark:text-gray-700 mb-2">Entrer valeur (USD)</label>
+            <input type="text" id="amount" class="w-full p-2 rounded-lg bg-gray-700 text-white dark:bg-gray-200 dark:text-black" placeholder="Entrer valeur">
+        </div>
+        <button id="actionButton" class="w-full bg-blue-500 text-white py-2 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">Déposer Fonds</button>
+    </div>
+    <div class="bg-gray-800 p-4 mt-4 rounded-lg dark:bg-gray-300 transition-all">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="text-gray-400 dark:text-gray-700">
+                    <th class="py-2 px-4">#</th>
+                    <th class="py-2 px-4">Opération</th>
+                    <th class="py-2 px-4">Montant (USD)</th>
+                    <th class="py-2 px-4">Date</th>
+                    <th class="py-2 px-4">Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border-t border-gray-700 dark:border-gray-400">
+                    <td class="py-2 px-4">1</td>
+                    <td class="py-2 px-4">dépôt</td>
+                    <td class="py-2 px-4">$40000.00</td>
+                    <td class="py-2 px-4">2025-02-02</td>
+                    <td class="py-2 px-4 text-green-400 dark:text-green-600">accepté</td>
+                </tr>
+                <tr class="border-t border-gray-700 dark:border-gray-400">
+                    <td class="py-2 px-4">3</td>
+                    <td class="py-2 px-4">dépôt</td>
+                    <td class="py-2 px-4">$40000.00</td>
+                    <td class="py-2 px-4">2025-02-02</td>
+                    <td class="py-2 px-4 text-green-400 dark:text-green-600">accepté</td>
+                </tr>
+                <tr class="border-t border-gray-700 dark:border-gray-400">
+                    <td class="py-2 px-4">2</td>
+                    <td class="py-2 px-4">dépôt</td>
+                    <td class="py-2 px-4">$40000.00</td>
+                    <td class="py-2 px-4">2025-02-02</td>
+                    <td class="py-2 px-4 text-green-400 dark:text-green-600">accepté</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+  </main>
+  <footer class="bg-gray-800 text-white dark:bg-gray-300 dark:text-black p-8 mt-16">
+   <div class="flex justify-between items-center">
+    <div>
+     <h3 class="text-lg font-bold">
+      À propos de nous
+     </h3>
+     <p class="mt-4">
+      Cryptomada est la plus grande plateforme d'échange de cryptomonnaies au monde.
+     </p>
+    </div>
+    <div class="flex space-x-4">
+     <a href="#">
+      <i class="fab fa-facebook-f text-2xl">
+      </i>
+     </a>
+     <a href="#">
+      <i class="fab fa-twitter text-2xl">
+      </i>
+     </a>
+     <a href="#">
+      <i class="fab fa-instagram text-2xl">
+      </i>
+     </a>
+     <a href="#">
+      <i class="fab fa-linkedin-in text-2xl">
+      </i>
+     </a>
+    </div>
+   </div>
+  </footer>
+  <script>
+   document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+    });
+  </script>
+ </body>
+</html>
