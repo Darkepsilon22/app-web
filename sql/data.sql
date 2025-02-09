@@ -12,16 +12,11 @@ INSERT INTO crypto (intitule, current_valeur) VALUES
 ('Litecoin', 180.00),
 ('Chainlink', 30.00);    
 
-INSERT INTO users (prenom, nom, date_naissance, email, password, solde, date_inscription)
-VALUES
-('John', 'Doe', '1990-01-01', 'johndoe@example.com', 'password123', 1000.00, CURRENT_TIMESTAMP);
 
 
-
-
-UPDATE users
-SET solde = 75000.00
-WHERE Id_users = 1;
+-- UPDATE users
+-- SET solde = 75000.00
+-- WHERE Id_users = 1;
 
 
 
