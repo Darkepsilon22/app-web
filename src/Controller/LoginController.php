@@ -28,11 +28,10 @@ public function sendPin(Request $request): Response
     try {
         $response = $this->loginService->sendPin($email, $password);
 
-        $successMessage = "Connexion réussie ! Un code PIN a été envoyé à votre email.";
+        $successMessage = "Un code PIN a été envoyé à votre email.";
         return $this->render('check_pin.html.twig', [
             'email' => $email,
             'password' => $password,
-            'response' => $response,
             'success' => $successMessage,
         ]);
     } catch (\Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface $e) {

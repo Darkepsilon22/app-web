@@ -6,11 +6,7 @@
 <main class="flex items-center justify-center h-[80vh] px-4 flex-grow">
     <div class="flex bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-2xl m-4">
         <div class="w-full px-4 flex flex-col justify-center">
-                <p class="text-center mt-4 text-gray-400 dark:text-gray-600">
-                    Un code PIN a été envoyé à 
-                    <strong>{{ email }}</strong>
-                    . Veuillez le saisir ci-dessous.
-                </p>
+                <p class="text-center mt-4 text-gray-400 dark:text-gray-600">Un code PIN a été envoyé à <strong>{{ email }}</strong>.</p>
             <form action="{{ path('app_login_verify') }}" method="POST">
                 <div class="mb-4">
                     <label class="block text-gray-400 dark:text-gray-600">Email</label>
