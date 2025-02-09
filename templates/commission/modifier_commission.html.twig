@@ -1,4 +1,4 @@
-{# templates/commission/modifier_commission.html.twig #}
+{# templates/commission/modifier_commission.html.twig
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -93,7 +93,7 @@
 
     <h1>Modifier la commission</h1>
 
-    {# Affichage du message de succès #}
+    {# Affichage du message de succès
     {% for message in app.flashes('success') %}
         <div class="alert">{{ message }}</div>
     {% endfor %}
@@ -115,4 +115,54 @@
     </form>
 
 </body>
-</html>
+</html> #}
+
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier la commission{% endblock %}
+
+{% block body %}
+
+<main class="flex flex-col items-center mt-24 px-4">
+    <h1 class="text-2xl font-bold text-center mb-6 text-white dark:text-gray-900 animate__animated animate__fadeInUp">
+        Update du commision
+    </h1>
+    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-3xl animate__animated animate__fadeInUp">
+        <form method="POST">
+            <div>
+                <label for="valeur_historique_pourcentage" class="block text-lg font-medium mb-2 text-white dark:text-black">Nouveau pourcentage</label>
+                <input type="number" name="valeur_historique_pourcentage" id="valeur_historique_pourcentage" value="{{ historiqueCommission.valeurHistoriquePourcentage }}" step="0.01" required class="w-full p-2 border border-gray-300 rounded-md bg-gray-800 text-white dark:bg-gray-300 dark:text-black dark:border-gray-600">
+            </div>
+            <div>
+                <label for="date_historique_pourcentage" class="block text-lg font-medium mb-2 text-white dark:text-black">Date et heure</label>
+                <input type="datetime-local" name="date_historique_pourcentage" id="date_historique_pourcentage" value="{{ currentDate|date('Y-m-d\\TH:i') }}" required class="w-full p-2 border border-gray-300 rounded-md bg-gray-800 text-white dark:bg-gray-300 dark:text-black dark:border-gray-600">
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition duration-200 mt-6 dark:bg-blue-700 dark:hover:bg-blue-800">Metre a jour</button>
+        </form>
+    </div>
+
+    {% if error is defined %}
+        <script>
+            Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "{{ error|raw }}"
+            });
+        </script>
+    {% endif %}
+    {% if success is defined %}
+    <script>
+        Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "{{ success|raw }}",
+        showConfirmButton: false,
+        timer: 1500
+        });
+    </script>
+    {% endif %}
+
+</main>
+
+{% endblock %}
