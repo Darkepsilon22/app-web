@@ -32,4 +32,10 @@ final class AppController extends AbstractController{
     {
         return $this->render('graphe/graphe.html.twig');  
     }
+
+    #[Route('/crypto/cours', name: 'page_cour_crypto')]
+    public function cours_crypto(): Response
+    {
+        return $this->render('cour_crypto/index.html.twig');  
+    }
 }
