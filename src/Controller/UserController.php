@@ -3,8 +3,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Crypto;
 use App\Entity\Users;
 use App\Entity\MouvementSolde;
+use App\Repository\CryptoUtilisateurRepository;
 use App\Repository\MouvementCryptoRepository;
 use App\Repository\TokenConnexionRepository;
 use App\Service\TokenConnexionService;
@@ -93,6 +95,32 @@ class UserController extends AbstractController
         return $this->render('user/depot_retrait.html.twig', [
             'user' => $user,
             'mouvementsSolde' => $mouvementsSolde
+        ]);
+    }
+
+    #[Route('/user/wallet', name: 'user_wallet', methods:['GET'])]
+    public function wallet(Request $request, TokenConnexionRepository $tokenRepository, EntityManagerInterface $entityManager, CryptoUtilisateurRepository $cryptoUtilisateurRepository): Response
+    {
+        $user = $this->tokenConnexionService->getUserFromToken($request, $tokenRepository, $entityManager);
+        if (!$user) {
+            return $this->render('accueil.html.twig');
+        }
+        $repositorycrypto = $entityManager->getRepository(Crypto::class);
+        $cryptos = $repositorycrypto->findAll();
+
+        $cryptoValues = [];
+
+        foreach ($cryptos as $crypto) {
+            $value = $crypto->getQuantiteCryptoUser($user->getIdUsers(), $cryptoUtilisateurRepository);
+            $cryptoValues[] = [
+                'crypto' => $crypto,
+                'value' => $value
+            ];
+        }
+
+        return $this->render('user/wallet.html.twig', [
+            'user' => $user,
+            'cryptos' => $cryptoValues,
         ]);
     }
 }
