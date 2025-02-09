@@ -130,6 +130,7 @@ class AdminController extends AbstractController
                 'id' => $userId,
                 'prenom' => $user->getPrenom(),
                 'nom' => $user->getNom(),
+                'email' => $user->getEmail(),
                 'solde' => $user->getSolde(),
                 'totalAchat' => $totalAchat,
                 'totalVente' => $totalVente,
