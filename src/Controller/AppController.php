@@ -26,4 +26,10 @@ final class AppController extends AbstractController{
     {
         return $this->render('register.html.twig');  
     }
+
+    #[Route('/crypto/graph', name: 'page_graph')]
+    public function graph(): Response
+    {
+        return $this->render('graphe/graphe.html.twig');  
+    }
 }
