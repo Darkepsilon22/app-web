@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Crypto{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.16.0/dist/sweetalert2.all.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.16.0/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <style>
+        /* Personnaliser la scrollbar */
+        .overflow-x-auto::-webkit-scrollbar {
+            width: 10px; /* Largeur de la scrollbar */
+            height: 10px; /* Hauteur pour la scrollbar horizontale */
+        }
+
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background-color: #3498db; /* Couleur de la barre de défilement */
+            border-radius: 10px; /* Coins arrondis de la barre */
+            border: 3px solid #f3f3f3; /* Bordure autour de la barre de défilement */
+        }
+
+        .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+            background-color: #2980b9; /* Couleur de la barre lors du survol */
+        }
+
+        .overflow-x-auto::-webkit-scrollbar-track {
+            background: #f1f1f1; /* Couleur de fond de la piste de la scrollbar */
+            border-radius: 10px;
+        }
+
+        .overflow-x-auto::-webkit-scrollbar-track:hover {
+            background: #dcdcdc; /* Couleur de fond de la piste lors du survol */
+        }
+
+        /* Animation de zoom pour les boutons au survol */
+        .btn-zoom:hover {
+            transform: scale(1.1);
+            transition: transform 0.3s ease;
+        }
+
+        /* Animation de rotation pour les icônes */
+        .icon-rotate:hover {
+            transform: rotate(360deg);
+            transition: transform 0.5s ease;
+        }
+    </style>    
+
+    <script>
+        // Active le mode sombre basé sur 'class'
+        tailwind.config = {
+            darkMode: 'class'
+        };
+        function toggleTheme() {
+            const html = document.documentElement; // Modifier <html> au lieu de <body>
+            const isDark = html.classList.toggle('dark'); // Ajoute ou enlève 'dark'
+            localStorage.setItem('theme', isDark ? 'dark' : 'light'); // Sauvegarde l'état
+            updateIcons();
+        }
+
+        function updateIcons() {
+            document.getElementById('moonIcon').classList.toggle('hidden', document.documentElement.classList.contains('dark'));
+            document.getElementById('sunIcon').classList.toggle('hidden', !document.documentElement.classList.contains('dark'));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+            updateIcons();
+        });
+    </script>
+</head>
+<body class="bg-blue-900 text-white dark:bg-blue-100 dark:text-black min-h-screen flex flex-col">
+<header class="flex justify-between items-center p-4 bg-blue-900 dark:bg-blue-100 w-full fixed top-0 z-10">
+    <div class="flex items-center space-x-4">
+        <!-- Logo -->
+        <a href="{{ path('admin_dashboard') }}">
+            <h5 class="text-lg font-bold">Acceuil</h5>
+        </a>
+
+        <!-- Menu Desktop -->
+        <nav class="hidden md:flex space-x-4">
+            <a href="{{ path('admin_gestion_mouvements') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black btn-zoom">Demmandes de transaction</a>
+            <a href="{{ path('admin_statuser') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black btn-zoom">Etat Utilisateurs</a>
+            <a href="{{ path('modifier_commission') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black btn-zoom">Update Commission</a>
+        </nav>
+    </div>
+
+    <!-- Menu Mobile -->
+    <div id="mobile-menu" class="hidden absolute top-16 left-0 w-full bg-blue-900 dark:bg-blue-100 shadow-md md:hidden">
+        <nav class="flex flex-col space-y-2 p-4">
+            <a href="{{ path('admin_gestion_mouvements') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black btn-zoom">Demmandes de transaction</a>
+            <a href="{{ path('admin_statuser') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black btn-zoom">Etat Utilisateurs</a>
+            <a href="{{ path('modifier_commission') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black btn-zoom">Update Commission</a>
+        </nav>
+    </div>
+
+    <!-- Boutons de droite -->
+    <div class="flex items-center space-x-4">
+        <!-- Bouton menu pour mobile -->
+        <button id="menu-btn" class="md:hidden text-gray-400 dark:text-gray-600 focus:outline-none">
+            <i class="fas fa-bars text-xl icon-rotate"></i>
+        </button>
+        <a href="{{ path('admin_logout') }}" class="bg-red-700 text-white px-4 py-2 rounded dark:bg-red-500 dark:text-black btn-zoom">Deconnexion</a>
+        <button onclick="toggleTheme()" class="text-gray-400 dark:text-gray-600">
+            <i id="moonIcon" class="fas fa-moon icon-rotate"></i>
+            <i id="sunIcon" class="fas fa-sun hidden icon-rotate"></i>
+        </button>
+    </div>
+</header>
+
+<script>
+    // Toggle menu pour mobile
+    document.getElementById('menu-btn').addEventListener('click', function () {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+</script>
+
+    {% block body %}{% endblock %}
+</body>
+<footer class="bg-gray-800 text-white dark:bg-gray-300 dark:text-black p-8 mt-auto">
+    <div class="flex justify-between items-center">
+        <div>
+            <h3 class="text-lg font-bold">À propos de nous</h3>
+            <p class="mt-4">
+            Fanomezantsoa <strong>ETU002439</strong> - 
+            Yohan <strong>ETU002494</strong> - 
+            Ony <strong>ETU002541</strong> - 
+            Itokiana <strong>ETU002582</strong>
+            </p>
+        </div>
+    </div>
+</footer>
+</html>

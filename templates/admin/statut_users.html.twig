@@ -1,36 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Statut des Utilisateurs</h1>
+{% extends 'admin/base.html.twig' %}
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Prénom</th>
-                <th>Nom</th>
-                <th>Solde</th>
-                <th>Total Achats</th>
-                <th>Total Ventes</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in usersData %}
+{% block title %}Etat Utilisateurs{% endblock %}
+
+{% block body %}
+
+<main class="flex flex-col items-center text-center mt-24 px-4">
+    <h1 class="text-2xl font-bold text-center mb-6 text-white dark:text-gray-900 animate__animated animate__fadeInUp">
+        Etat des Utilisateurs
+    </h1>
+    <div class="overflow-x-auto w-full max-w-5xl max-h-[60vh] rounded-lg shadow-lg animate__animated animate__fadeInUp animate__delay-0.5s">
+        <table class="w-full border-collapse border border-gray-300 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden text-sm sm:text-base">
+            <thead class="bg-gray-900 text-white dark:bg-gray-700">
                 <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.prenom }}</td>
-                    <td>{{ user.nom }}</td>
-                    <td>{{ user.solde }}</td>
-                    <td>{{ user.totalAchat }}</td>
-                    <td>{{ user.totalVente }}</td>
+                    <th class="p-3 sm:p-4 border border-gray-500">ID</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Prénom</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Nom</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Solde</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Total Achats</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Total Ventes</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+            </thead>
+            <tbody class="bg-white text-black dark:bg-gray-200">
+                {% for user in usersData %}
+                    <tr class="bg-gray-800 hover:bg-gray-700 text-white dark:bg-gray-300 dark:hover:bg-gray-400 dark:text-black animate__animated animate__fadeInUp animate__delay-0.5s">
+                        <td class="p-3 sm:p-4 border border-gray-500">{{ user.id }}</td>
+                        <td class="p-3 sm:p-4 border border-gray-500">{{ user.prenom }}</td>
+                        <td class="p-3 sm:p-4 border border-gray-500">{{ user.nom }}</td>
+                        <td class="p-3 sm:p-4 border border-gray-500">{{ user.solde }}</td>
+                        <td class="p-3 sm:p-4 border border-gray-500">{{ user.totalAchat }}</td>
+                        <td class="p-3 sm:p-4 border border-gray-500">{{ user.totalVente }}</td>
+                    </tr>
+                {% else %}
+                    <tr class="bg-gray-800 hover:bg-gray-700 text-white dark:bg-gray-300 dark:hover:bg-gray-400 dark:text-black animate__animated animate__fadeInUp animate__delay-0.5s">
+                        <td class="p-3 sm:p-4 border border-gray-500 text-center" colspan="6">Pas d'utilisateur.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+{% endblock %}
