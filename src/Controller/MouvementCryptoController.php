@@ -103,16 +103,6 @@ public function vendreCrypto(Request $request): JsonResponse
     return new JsonResponse($result, isset($result['error']) ? 400 : 200);
 }
 
-    #[Route('/transactions/{userId}', name: 'transactions_user', methods: ['GET'])]
-    public function index(int $userId): Response
-    {
-        $historique = $this->mouvementCryptoRepository->getHistoriqueByUser($userId);
-
-        return $this->render('historique/historique.html.twig', [
-            'historique' => $historique,
-        ]);
-    }
-
     #[Route('/transactions', name: 'transactions_users', methods: ['GET'])]
     public function historiques(): Response
     {
