@@ -28,11 +28,15 @@ class AdminController extends AbstractController
             // Vérifier si l'utilisateur existe dans la BDD
             $user = $entityManager->getRepository(UsersAdmin::class)->findOneBy(['username' => $username]);
 
-            if ($user && password_verify($password, $user->getPassword())) {
-                $session->set('user', $username); 
-                return $this->redirectToRoute('admin_dashboard'); 
+            if ($user) {
+                if(password_verify($password, $user->getPassword())){
+                    $session->set('user', $username); 
+                    return $this->redirectToRoute('admin_dashboard');
+                } else {
+                    return $this->render('admin/login.html.twig', ['error' => 'Mot de passe incorrect']);
+                }
             } else {
-                $this->addFlash('error', 'Identifiant incorrect');
+                return $this->render('admin/login.html.twig', ['error' => 'Identifiant incorrect']);
             }
         }
 
@@ -60,8 +64,14 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin/gestion_mouvements', name: 'admin_gestion_mouvements')]
-    public function gestionMouvements(EntityManagerInterface $entityManager): Response
+    public function gestionMouvements(EntityManagerInterface $entityManager, RequestStack $requestStack): Response
     {
+        $session = $requestStack->getSession();
+
+        if ($session->get('user') !== 'admin') {
+            return $this->redirectToRoute('admin_login');
+        }
+
         // Récupérer tous les mouvements en attente
         $mouvements = $entityManager->getRepository(MouvementSolde::class)->findBy(['statut' => 'en_attente']);
 
@@ -114,10 +124,13 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin/statusers', name: 'admin_statuser')]
-    public function statuser(
-        ManagerRegistry $doctrine,
-        MouvementCryptoRepository $mouvementCryptoRepository
-    ): Response {
+    public function statuser(ManagerRegistry $doctrine,MouvementCryptoRepository $mouvementCryptoRepository, RequestStack $requestStack): Response {
+        $session = $requestStack->getSession();
+
+        if ($session->get('user') !== 'admin') {
+            return $this->redirectToRoute('admin_login');
+        }
+        
         $users = $doctrine->getRepository(Users::class)->findAll();
         $data = [];
 

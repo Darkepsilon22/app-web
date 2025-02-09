@@ -41,9 +41,12 @@ class CommissionController extends AbstractController
                 $this->entityManager->persist($nouvelleCommission);
                 $this->entityManager->flush();
 
-                $this->addFlash('success', 'La nouvelle commission a été ajoutée avec succès.');
-
-                return $this->redirectToRoute('modifier_commission');
+                $successMessage = "La nouvelle commission a été ajoutée avec succès.";
+                return $this->render('commission/modifier_commission.html.twig', [
+                    'success' => $successMessage,
+                    'currentDate' => $currentDate,
+                    'historiqueCommission' => $nouvelleCommission
+                ]);
             }
         }
 
