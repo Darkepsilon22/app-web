@@ -3,11 +3,13 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+
 
 
 #[ORM\Entity]
 #[ORM\Table(name: "users")]
-class Users 
+class Users implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -52,7 +54,6 @@ class Users
     public function getEmail(): string { return $this->email; }
     public function setEmail(string $email): self { $this->email = $email; return $this; }
 
-    public function getPassword(): string { return $this->password; }
     public function setPassword(string $password): self { $this->password = $password; return $this; }
 
     public function getSolde(): ?string { return $this->solde; }
@@ -62,5 +63,10 @@ class Users
     public function setDateInscription(\DateTimeInterface $dateInscription): self { 
         $this->dateInscription = $dateInscription; 
         return $this; 
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
     }
 }

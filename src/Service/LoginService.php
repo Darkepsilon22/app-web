@@ -1,9 +1,8 @@
 <?php
-// src/Service/LoginService.php
+
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 class LoginService
 {
@@ -15,36 +14,49 @@ class LoginService
         $this->client = $client;
     }
 
-    public function sendPin(string $email,string $password): string
+    public function sendPin(string $email, string $password): string
     {
         $response = $this->client->request('POST', $this->apiUrl . 'send', [
-            'json' => ['email' => $email,'password' => $password,],
+            'json' => ['email' => $email, 'password' => $password],
         ]);
 
         return $response->getContent();
     }
 
-    public function verifyPin(string $email,string $password, int $pin): string
-    {
-        $response = $this->client->request('POST', $this->apiUrl . 'verify', [
-            'query' => ['pin' => $pin],
-            'json' => ['email' => $email,'password' => $password],
-        ]);
+    public function verifyPin(string $email, string $password, int $pin): string
+{
+    $response = $this->client->request('POST', $this->apiUrl . 'verify?pin=' . $pin, [
+        'json' => [
+            'email' => $email,
+            'password' => $password
+        ],
+    ]);
 
+    $statusCode = $response->getStatusCode();
+    $content = $response->getContent(false);
 
-        return $response->getContent();
+    // dump("Status Code: " . $statusCode);
+    // dump("Response Content: " . $content);
+
+    if ($statusCode !== 200) {
+        throw new \Exception("Erreur API: " . $content);
     }
-    public function resetSend(string $email,string $password): string
-    {
-        $response = $this->client->request('POST', $this->apiUrl . 'verify', [
-            'json' => ['email' => $email,'password' => $password],
-        ]);
 
-
-        return $response->getContent();
+    // 🔹 Extraction du token depuis la réponse texte
+    if (preg_match('/token généré : (\S+)/', $content, $matches)) {
+        return $matches[1];  // ✅ Récupération du token
     }
 
-    
-    
+    throw new \Exception("Token non trouvé dans la réponse.");
 }
-?>
+
+
+    public function resetSend(string $email, string $password): string
+    {
+        $response = $this->client->request('POST', 'http://localhost:8080/api/user/resettentative/send', [
+            'json' => ['email' => $email, 'password' => $password],
+        ]);
+
+        return $response->getContent();
+    }
+}

@@ -58,7 +58,7 @@ CREATE TABLE mouvement_crypto(
 
 CREATE TABLE token_connexion(
    Id_token_connexion SERIAL,
-   code VARCHAR(255)  NOT NULL,
+   code VARCHAR(512)  NOT NULL,
    date_expiration TIMESTAMP NOT NULL,
    Id_users INTEGER NOT NULL,
    PRIMARY KEY(Id_token_connexion),
