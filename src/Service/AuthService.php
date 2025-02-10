@@ -8,7 +8,7 @@ use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 class AuthService
 {
     private $client;
-    private $apiUrl = 'http://localhost:8080/api/auth/';
+    private $apiUrl = 'http://identity_provider_container:8080/api/auth/';
 
     public function __construct(HttpClientInterface $client)
     {
