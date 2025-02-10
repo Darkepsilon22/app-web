@@ -123,4 +123,29 @@ class UserController extends AbstractController
             'cryptos' => $cryptoValues,
         ]);
     }
+
+    #[Route('/user/achat_vente/', name: 'user_achat_vente', methods: ['GET'])]
+    public function achat_vente(Request $request, TokenConnexionRepository $tokenRepository, EntityManagerInterface $entityManager): Response
+    {
+        $repository = $entityManager->getRepository(Users::class);
+        $user = $repository->find(1);
+        // $user = $this->tokenConnexionService->getUserFromToken($request, $tokenRepository, $entityManager);
+        if (!$user) {
+            return $this->render('accueil.html.twig');
+        }
+
+        return $this->render('user/achat_vente_crypto.html.twig', [
+            'user' => $user
+        ]);
+    }
+
+    #[Route('/user/logout', name: 'user_logout')]
+    public function logout(): Response
+    {
+        $response = $this->render('accueil.html.twig');
+        $response->headers->clearCookie('auth_token');
+    
+        return $response;
+    }
+    
 }

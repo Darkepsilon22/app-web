@@ -1,0 +1,181 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Achat / Vente{% endblock %}
+
+{% block body %}
+    <style>
+        .fade {
+            transition: all 0.5s ease-in-out;
+        }
+        .slide-transition {
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+        .carousel-track {
+            display: flex;
+            gap: 10px;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-item {
+            min-width: calc(100% / 3 - 10px);
+        }
+    </style>
+<main class="flex flex-col items-center px-4 flex-grow mt-20 gap-8 container mx-auto mb-10">
+    <div class=" text-center bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-lg animate__animated animate__fadeInUp">
+        <h1 class="text-3xl font-bold text-center mb-6 text-blue-500 dark:text-blue-700 ">Mon Solde</h1>
+        <p class="text-2xl">$ {{user.solde}}</p>
+    </div>
+
+    <div class="w-full p-4 bg-gray-800 dark:bg-gray-300 rounded-lg shadow-lg p-10 max-w-4xl animate__animated animate__fadeInUp  animate__delay-0.5s">
+        <h2 class="text-xl font-semibold text-center mb-3">Marché des Cryptos</h2>
+        <p class="text-gray-400 dark:text-gray-800 text-sm text-center mb-5">Suivez en temps réel l'évolution du marché des cryptomonnaies et prenez les meilleures décisions !</p>
+        
+        <div class="carousel-container relative">
+            <div id="cryptoCarousel" class="carousel-track grid-cols-3 gap-4 my-4 transition-transform duration-500 ease-in-out">
+            </div>
+            <button onclick="prevSlide()" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-600 dark:bg-gray-100 p-2 rounded"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+            <button onclick="nextSlide()" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-600 dark:bg-gray-100 p-2 rounded"><i class="fa fa-arrow-right" aria-hidden="true"></i></button>
+        </div>
+        
+        <form method="POST" action="{{ path('achat_vente_crypto') }}">
+            <div class="bg-gray-700 dark:bg-gray-200 p-4 rounded-lg">
+                <label class="block text-sm mb-1">Sélectionner une operation</label>
+                <select id="operation" name="operation" class="w-full p-2 bg-gray-600 dark:bg-gray-100 rounded">
+                    <option value="vente" >vente</option>
+                    <option value="achat">achat</option>
+                </select>
+
+                <label class="block text-sm mb-1">Sélectionner une Crypto</label>
+                <select id="cryptoSelect" name="idcrypto" class="w-full p-2 bg-gray-600 dark:bg-gray-100 rounded">
+                </select>
+
+                <label class="block text-sm mt-3 mb-1">Quantité</label>
+                <input id="valueCrypto" name="valueCrypto" type="number" class="w-full p-2 bg-gray-600 dark:bg-gray-100 rounded" value="0" step="0.001">
+                <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition duration-200 mt-6 dark:bg-blue-700 dark:hover:bg-blue-800">Valider</button>
+            </div>
+        </form>
+    </div>
+
+</main>
+{% if error is defined %}
+    <script>
+        Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "{{ error|raw }}"
+        });
+    </script>
+{% endif %}
+{% if success is defined %}
+    <script>
+        Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "{{ success|raw }}",
+        showConfirmButton: false,
+        timer: 1500
+        });
+    </script>
+{% endif %}
+    <script>
+        let currentIndex = 0;
+        let cryptos = [];
+        const carousel = document.getElementById("cryptoCarousel");
+        const cryptoSelect = document.getElementById("cryptoSelect");
+
+        function renderCarousel() {
+            fetch('/cryptos')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.cryptos || data.cryptos.length === 0) return;
+
+                    cryptos = data.cryptos;
+                    carousel.innerHTML = "";
+
+                    // Duplication des éléments pour une animation fluide
+                    const loopedCryptos = [...cryptos, ...cryptos];
+
+                    loopedCryptos.forEach(crypto => {
+                        const div = document.createElement("div");
+                        div.className = "carousel-item p-4 bg-gray-700 dark:bg-gray-200 rounded-lg";
+                        div.innerHTML = `
+                            <p class='text-lg font-semibold'>${crypto.intitule}</p>
+                            <p class='text-blue-500 dark:text-blue-700 price-change animate__animated animate__flipInX'>$${crypto.currentValeur}</p>`;
+                        carousel.appendChild(div);
+                    });
+                    
+                    addSelect();
+                    updateCarouselPosition();
+                })
+                .catch(error => console.error("Erreur lors de la récupération des cryptos :", error));
+        }
+
+        function addSelect() {
+            if (!cryptos || cryptos.length === 0) {
+                const option  = document.createElement('option');
+                option.textContent = 'Pas de cryptos';
+                option.disabled = true;
+                cryptoSelect.appendChild(option);
+                return;
+            }
+
+            cryptoSelect.innerHTML = "";
+            cryptos.forEach((crypto) => {
+                const option  = document.createElement('option');
+                option.value = crypto.idCrypto;
+                option.textContent = crypto.intitule;
+                cryptoSelect.appendChild(option);
+            });
+        }
+
+        function updateCarouselPosition() {
+            const offset = -currentIndex * 34.4; // Ajustement dynamique
+            carousel.style.transform = `translateX(${offset}%)`;
+            carousel.style.transition = "transform 0.5s ease-in-out";
+        }
+
+        function nextSlide() {
+            if (currentIndex >= cryptos.length) {
+                currentIndex = 0;
+                carousel.style.transition = "none"; // Désactiver temporairement l'animation
+                updateCarouselPosition();
+                setTimeout(() => {
+                    carousel.style.transition = "transform 0.5s ease-in-out";
+                    currentIndex++;
+                    updateCarouselPosition();
+                }, 50);
+            } else {
+                currentIndex++;
+                updateCarouselPosition();
+            }
+        }
+
+        function prevSlide() {
+            if (currentIndex <= 0) {
+                currentIndex = cryptos.length;
+                carousel.style.transition = "none";
+                updateCarouselPosition();
+                setTimeout(() => {
+                    carousel.style.transition = "transform 0.5s ease-in-out";
+                    currentIndex--;
+                    updateCarouselPosition();
+                }, 50);
+            } else {
+                currentIndex--;
+                updateCarouselPosition();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderCarousel();
+            setInterval(nextSlide, 3000);
+            setInterval(() => renderCarousel(), 10000);
+        });
+
+    </script>
+
+{% endblock %}

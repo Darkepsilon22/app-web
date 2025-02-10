@@ -41,7 +41,7 @@ class MouvementCryptoService
     $prixTotal = $prixCrypto + $commissionValeur;
 
     if ($user->getSolde() < $prixTotal) {
-        return ['error' => 'Fonds insuffisants'];
+        return ['error' => 'Fonds insuffisants. Votre Solde : '.$user->getSolde().' | Prix Crypto : '. $prixCrypto. ' | Commission : '.$commissionValeur];
     }
 
     // Mise à jour du solde de l'utilisateur
@@ -115,7 +115,7 @@ public function vendreCrypto(Users $user, Crypto $crypto, float $quantite, strin
         ->findOneBy(['user' => $user, 'crypto' => $crypto]);
 
     if (!$cryptoUtilisateur || $cryptoUtilisateur->getQuantite() < $quantite) {
-        return ['error' => 'Quantité de crypto insuffisante'];
+        return ['error' => 'Quantité de crypto insuffisante. Quantite : '.$cryptoUtilisateur->getQuantite()];
     }
 
     // Mise à jour du solde utilisateur après vente

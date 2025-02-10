@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Users;
+use App\Repository\MouvementCryptoRepository;
 use App\Repository\TokenConnexionRepository;
 use App\Service\TokenConnexionService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,11 +24,7 @@ final class AppController extends AbstractController {
     #[Route('/', name: 'page_acceuil')]
     public function index(Request $request, TokenConnexionRepository $tokenRepository, EntityManagerInterface $entityManager): Response
     {
-
-
-        $repository = $entityManager->getRepository(Users::class);
-        $user = $repository->find(1);
-        // $user = $this->tokenConnexionService->getUserFromToken($request, $tokenRepository, $entityManager);
+        $user = $this->tokenConnexionService->getUserFromToken($request, $tokenRepository, $entityManager);
         if ($user) {
             return $this->render('accueil.html.twig', [
                 'user' => $user,
@@ -98,5 +95,22 @@ final class AppController extends AbstractController {
             ]);
         }
         return $this->render('cour_crypto/analyse.html.twig');
+    }
+
+    #[Route('/transactions', name: 'transactions_users', methods: ['GET'])]
+    public function historiques(Request $request, TokenConnexionRepository $tokenRepository, EntityManagerInterface $entityManager, MouvementCryptoRepository $mouvementCryptoRepository): Response
+    {
+        $user = $this->tokenConnexionService->getUserFromToken($request, $tokenRepository, $entityManager);
+        $historique = $mouvementCryptoRepository->getHistorique();
+
+        if ($user) {
+            return $this->render('historique/transactions.html.twig', [
+                'user' => $user,
+                'historique' => $historique,
+            ]);
+        }
+        return $this->render('historique/transactions.html.twig', [
+            'historique' => $historique
+        ]);
     }
 }
