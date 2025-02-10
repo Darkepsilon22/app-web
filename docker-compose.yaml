@@ -1,0 +1,32 @@
+services:
+  dbcrypto:
+    image: postgres:15
+    container_name: postgresql_crypto
+    ports:
+      - "5433:5433"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: crypto
+    volumes:
+      - postgres-crypto:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: ["postgres", "-c", "config_file=/var/lib/postgresql/data/postgresql.conf", "-c", "port=5433"]
+
+  appcrypto:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: symfony_app_crypto
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app-crypto
+    environment:
+      APP_ENV: dev
+      DATABASE_URL: "postgresql://postgres:admin@dbcrypto:5433/crypto?serverVersion=15&charset=utf8"
+    depends_on:
+      - dbcrypto
+
+volumes:
+  postgres-crypto:

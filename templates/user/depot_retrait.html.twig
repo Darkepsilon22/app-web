@@ -1,102 +1,79 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Depot / Retrait</title>
-    <link rel="stylesheet" href="{{ asset('css/bootstrap/bootstrap.min.css') }}">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1 class="text-center">Depot / Retrait</h1>
+{% extends 'base.html.twig' %}
 
-        {% for label, messages in app.flashes %}
-            <div class="alert alert-{{ label }}">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endfor %}
+{% block title %}Depot / Retrait{% endblock %}
 
-        <form method="POST" action="{{ path('user_depot_retrait', {'id': user.idUsers}) }}">
-            <div class="mb-3">
-                <label for="somme" class="form-label">Montant</label>
-                <input type="number" class="form-control" id="somme" name="somme" required>
-            </div>
+{% block body %}
+<main class="flex flex-col items-center px-4 flex-grow mt-20 gap-8 container mx-auto mb-10">
+    <div class=" text-center bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-lg animate__animated animate__fadeInUp">
+        <h1 class="text-3xl font-bold text-center mb-6 text-blue-500 dark:text-blue-700 ">Mon Solde</h1>
+        <p class="text-2xl">$ {{user.solde}}</p>
+    </div>
 
-            <div class="mb-3">
-                <label for="operation" class="form-label">Type d'opération</label>
-                <select class="form-control" id="operation" name="operation" required>
+    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-3xl animate__animated animate__fadeInUp animate__delay-1s">
+        <form method="POST" action="{{ path('user_depot_retrait') }}">
+            <div class="mb-5">
+                <label for="operation" class="block text-lg font-medium mb-2 text-white dark:text-black">Type d'opération :</label>
+                <select id="operation" name="operation" required class="w-full p-2 border border-gray-300 rounded-md bg-gray-800 text-white dark:bg-gray-300 dark:text-black dark:border-gray-600">
                     <option value="depot">Dépôt</option>
                     <option value="retrait">Retrait</option>
                 </select>
             </div>
-
-            <button type="submit" class="btn btn-primary">Valider</button>
+            <div>
+                <label for="somme" class="block text-lg font-medium mb-2 text-white dark:text-black">Montant :</label>
+                <input type="number" id="somme" name="somme" required class="w-full p-2 border border-gray-300 rounded-md bg-gray-800 text-white dark:bg-gray-300 dark:text-black dark:border-gray-600">
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition duration-200 mt-6 dark:bg-blue-700 dark:hover:bg-blue-800">Valider</button>
         </form>
-
-        <hr>
-
-        <h2>Historique des mouvements</h2>
-        <table class="table">
-            <thead>
+    </div>
+    <div class="overflow-x-auto w-full max-w-5xl max-h-[60vh] rounded-lg shadow-lg animate__animated animate__fadeInUp animate__delay-2s">
+        <h1 class="text-3xl font-bold text-center mb-6 text-white dark:text-gray-900">Historique des mouvements</h1>
+        <table class="w-full border-collapse border border-gray-300 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden text-sm sm:text-base">
+            <thead class="bg-gray-900 text-white dark:bg-gray-700">
                 <tr>
-                    <th>ID</th>
-                    <th>Montant</th>
-                    <th>Date du mouvement</th>
-                    <th>Type</th>
-                    <th>Statut</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">ID</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Montant</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Date du mouvement</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Type</th>
+                    <th class="p-3 sm:p-4 border border-gray-500">Statut</th>
                 </tr>
             </thead>
-            <tbody id="mouvement-list">
-                {% for mouvement in mouvementsSolde %}
-                    <tr>
-                        <td>{{ mouvement.idMouvementSolde }}</td>
-                        <td>{{ mouvement.somme }}</td>
-                        <td>{{ mouvement.dateMouvement|date("Y-m-d H:i:s") }}</td>
-                        <td>{{ mouvement.estDepot ? 'Dépôt' : 'Retrait' }}</td>
-                        <td>{{ mouvement.statut }}</td>
+            <tbody class="bg-white text-black dark:bg-gray-200">
+               {% for mouvement in mouvementsSolde %}
+                    <tr class=" text-center {% if mouvement.estDepot %}bg-green-200{% else %}bg-red-200{% endif %} animate__animated animate__fadeInUp animate__delay-0.5s">
+                        <td class="p-3 sm:p-4 border">{{ mouvement.idMouvementSolde }}</td>
+                        <td class="p-3 sm:p-4 border">{{ mouvement.somme }}</td>
+                        <td class="p-3 sm:p-4 border">{{ mouvement.dateMouvement|date("Y-m-d H:i:s") }}</td>
+                        <td class="p-3 sm:p-4 border">{{ mouvement.estDepot ? 'Dépôt' : 'Retrait' }}</td>
+                        <td class="p-3 sm:p-4 border font-bold">{{ mouvement.statut }}</td>
+                    </tr>
+                {% else %}
+                    <tr class="bg-gray-800 hover:bg-gray-700 text-white dark:bg-gray-300 dark:hover:bg-gray-400 dark:text-black">
+                        <td class="p-3 sm:p-4 border text-center" colspan="5">Aucun mouvement trouvé.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
+</main>
+{% if error is defined %}
     <script>
-        function updateMouvementList(mouvement) {
-            const tableBody = document.getElementById('mouvement-list');
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>${mouvement.id}</td>
-                <td>${mouvement.somme}</td>
-                <td>${mouvement.date_mouvement}</td>
-                <td>${mouvement.est_depot}</td>
-                <td>${mouvement.statut}</td>
-            `;
-            tableBody.appendChild(newRow);
-        }
-
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault(); 
-
-            const formData = new FormData(this);
-            const url = this.action;
-
-            fetch(url, {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    alert(data.message);
-                    updateMouvementList(data.mouvement); // Mettre à jour la liste avec le nouveau mouvement
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-            });
+        Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "{{ error|raw }}"
         });
     </script>
-</body>
-</html>
+{% endif %}
+{% if success is defined %}
+    <script>
+        Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "{{ success|raw }}",
+        showConfirmButton: false,
+        timer: 1500
+        });
+    </script>
+{% endif %}
+{% endblock %}

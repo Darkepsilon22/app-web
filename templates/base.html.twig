@@ -99,6 +99,27 @@
                     <a href="{{ path('page_analyse_crypto') }}" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Analyse</a>
                 </div>
             </div>
+            {% if user is defined %}
+            <div class="relative">
+                <button id="dropdown-user" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black flex items-center btn-zoom">
+                    Pour moi
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="dropdown-menu-user" class="hidden absolute left-0 mt-2 w-48 bg-blue-900 dark:bg-blue-100 shadow-lg rounded-lg text-sm">
+                    <a href="{{ path('user_achat_vente') }}" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Achat/vente crypto</a>
+                    <a href="{{ path('transactions_user') }}" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Historique de transactions</a>
+                    <a href="{{ path('user_depot_retrait') }}" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Depot/retrait</a>
+                    <a href="{{ path('user_wallet') }}" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">portefeuille</a>
+                </div>
+            </div>
+            <script>
+                document.getElementById('dropdown-user').addEventListener('click', function () {
+                    document.getElementById('dropdown-menu-user').classList.toggle('hidden');
+                });
+            </script>
+            {% endif %}
             <a href="{{ path('transactions_users') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black btn-zoom">Achats et ventes</a>
         </nav>
     </div>
@@ -119,6 +140,27 @@
                     <a href="#" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Analyse</a>
                 </div>
             </div>
+            {% if user is defined %}
+            <div class="relative">
+                <button id="dropdown-user-mobile" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black flex items-center btn-zoom">
+                    Pour moi
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div id="dropdown-menu-user-mobile" class="hidden absolute left-0 mt-2 w-48 bg-blue-900 dark:bg-blue-100 shadow-lg rounded-lg text-sm">
+                    <a href="{{ path('user_achat_vente') }}" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Achat/vente crypto</a>
+                    <a href="{{ path('transactions_user') }}" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Historique de transactions</a>
+                    <a href="{{ path('user_depot_retrait') }}" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">Depot/retrait</a>
+                    <a href="{{ path('user_wallet') }}" class="block px-4 py-2 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black">portefeuille</a>
+                </div>
+            </div>
+            <script>
+                document.getElementById('dropdown-user-mobile').addEventListener('click', function () {
+                    document.getElementById('dropdown-menu-user-mobile').classList.toggle('hidden');
+                });
+            </script>
+            {% endif %}
             <a href="{{ path('transactions_users') }}" class="text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black btn-zoom">Achats et ventes</a>
         </nav>
     </div>
@@ -129,8 +171,18 @@
         <button id="menu-btn" class="md:hidden text-gray-400 dark:text-gray-600 focus:outline-none">
             <i class="fas fa-bars text-xl icon-rotate"></i>
         </button>
+        {% if user is defined %}
+        <div class="flex items-center space-x-2">
+            <img alt="User photo" class="h-10 w-10 rounded-full" height="40" src="" width="40">
+            <span class="text-gray-200 dark:text-gray-600 font-bold">
+            {{user.nom}} {{user.prenom}} 
+            </span>
+        </div>
+        <a href="{{ path('user_logout') }}" class="bg-red-700 text-white px-4 py-2 rounded dark:bg-red-500 dark:text-black btn-zoom">Deconnexion</a>
+        {% else %}
         <a href="{{ path('page_login') }}" class="bg-gray-800 text-white px-4 py-2 rounded dark:bg-gray-300 dark:text-black btn-zoom">Connexion</a>
         <a href="{{ path('page_register') }}" class="bg-blue-700 text-white px-4 py-2 rounded dark:bg-blue-500 dark:text-black btn-zoom">Inscription</a>
+        {% endif %}
         <button onclick="toggleTheme()" class="text-gray-400 dark:text-gray-600">
             <i id="moonIcon" class="fas fa-moon icon-rotate"></i>
             <i id="sunIcon" class="fas fa-sun hidden icon-rotate"></i>

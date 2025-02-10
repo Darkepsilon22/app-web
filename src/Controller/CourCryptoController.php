@@ -15,12 +15,6 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class CourCryptoController extends AbstractController {
 
-    #[Route('/crypto/analyse', name: 'page_analyse_crypto'), ]
-    public function getPage(): Response
-    {
-        return $this->render('cour_crypto/analyse.html.twig');
-    }
-
     #[Route('/courcrypto/analyse', name: 'analyse_cour_crypto', methods: ['POST'])]
     public function getStatistiques(Request $request, CourCryptoRepository $courCryptoRepository): JsonResponse
     {

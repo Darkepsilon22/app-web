@@ -5,6 +5,9 @@
 {% block body %}
 <main class="flex flex-col items-center text-center mt-24 px-4">
     <h1 class="text-2xl font-bold text-center mb-6 text-white dark:text-gray-900 animate__animated animate__fadeInUp">
+        {% if user is defined %}
+            Vos
+        {% endif %}
         Historique des Transactions
     </h1>
     <div class="overflow-x-auto w-full max-w-5xl max-h-[60vh] rounded-lg shadow-lg animate__animated animate__fadeInUp animate__delay-0.5s">

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Portefeuille{% endblock %}
+
+{% block body %}
+<main class="flex flex-col items-center px-4 flex-grow mt-20 gap-8 container mx-auto mb-10">
+    <div class=" text-center bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-lg animate__animated animate__fadeInUp">
+        <h1 class="text-3xl font-bold text-center mb-6 text-blue-500 dark:text-blue-700 ">Mon Solde</h1>
+        <p class="text-2xl">$ {{user.solde}}</p>
+    </div>
+
+<h1 class="text-3xl font-bold text-center animate__animated animate__fadeInUp animate__delay-1s">Mes Cryptos</h1>
+    <div class=" flex flex-wrap justify-center gap-5 w-full animate__animated animate__fadeInUp animate__delay-1s">
+    
+    {% for crypto in cryptos %}
+        <div class="text-center bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg w-full max-w-xs">
+            <h1 class="text-3xl font-bold text-center mb-6 text-blue-500 dark:text-blue-700 ">{{ crypto.crypto.intitule }}</h1>
+            <p class="text-2xl">{{ crypto.value }}</p>    
+        </div>
+    {% endfor %}
+
+    </div>
+
+</main>
+{% endblock %}

@@ -8,7 +8,7 @@ use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 class LoginService
 {
     private $client;
-    private $apiUrl = 'http://localhost:8080/api/login/';
+    private $apiUrl = 'http://identity_provider_container:8080/api/login/';
 
     public function __construct(HttpClientInterface $client)
     {
@@ -43,7 +43,7 @@ class LoginService
     public function resetSend(string $email,string $password): string
     {
         try {
-            $response = $this->client->request('POST', 'http://localhost:8080/api/user/resettentative/send', [
+            $response = $this->client->request('POST', 'http://identity_provider_container:8080/api/user/resettentative/send', [
                 'json' => ['email' => $email,'password' => $password],
             ]);
             return $response->getContent();

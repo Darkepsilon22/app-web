@@ -5,6 +5,14 @@
 {% block body %}
 
 <main class="flex flex-col items-center text-center justify-center h-[80vh] px-4 flex-grow">
+    {% if user is defined %}
+    <h1 class="text-5xl font-bold text-blue-500 dark:text-blue-700 animate__animated animate__fadeInUp">
+        Bonjour 
+    </h1>
+    <h2 class="text-6xl font-bold mt-4 animate__animated animate__fadeInUp animate__delay-1s">
+        {{user.nom}} {{user.prenom}} 
+    </h2>
+    {% else %}
     <h1 class="text-6xl font-bold text-blue-500 dark:text-blue-700 animate__animated animate__fadeInUp">
         Bienvenue !
     </h1>
@@ -16,6 +24,7 @@
             Se connecter
         </a>
     </div>
+    {% endif %}
 </main>
 
 {% endblock %}
