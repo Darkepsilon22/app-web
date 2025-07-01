@@ -1,1 +1,1 @@
-Backend pour une application de cryptoMonnaie(CryptoApp)
+Backend pour une application de cryptoMonnaie sur Symfony(CryptoApp)
